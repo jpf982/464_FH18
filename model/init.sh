@@ -15,6 +15,7 @@ julia << EOF
 using Pkg
 
 Pkg.add("LinearAlgebra")
+Pkg.add("Arpack")
 Pkg.add("Plots")
 Pkg.add("PyPlot")
 Pkg.add("ColorSchemes")
