@@ -16,14 +16,15 @@ function mkfolder(path)
 end
 
 function genRandomStack() # this is arbitrary and ugly for now, do  not worry
-	Air  = Layer(     1, 1, 800*nm,		0);
+	#param of layer:name, εᵣ  μᵣ  Δx (nm), σ (S/m)
+	Air  = 	  Layer("Air"     1, 1, 800*nm,		0);
 	Substrate=Layer(  5, 1,10^6*nm,    	0);
-	dx1 = 100*rand(1)[1] + 50; dx2 = 150*rand(1)[1] + 50
-	Si1 =   Layer( 11.9, 1, dx1*nm,		0);
-	Glass1= Layer(    5, 1, dx2*nm,	   	0);
-	dx1 = 200*rand(1)[1] + 100; dx2 = 200*rand(1)[1] + 100
-	Si2 =   Layer( 11.9, 1, dx1*nm,	     	0);
-	Glass2= Layer(    5, 1, dx2*nm,	   	0);
+	dx1 = 100*rand() + 50; dx2 = 150*rand(1)[1] + 50
+	Si1 =     Layer( 11.9, 1, dx1*nm,		0);
+	Glass1=   Layer(    5, 1, dx2*nm,	   	0);
+	dx1 = 200*rand()+ 100; dx2 = 200*rand() + 100
+	Si2 =     Layer( 11.9, 1, dx1*nm,	     	0);
+	Glass2=   Layer(    5, 1, dx2*nm,	   	0);
 	PhC₁ = []
 	PhC₂ = []
 	for i = 1:6

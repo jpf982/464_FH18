@@ -15,6 +15,7 @@ using Transmit
 export main, Layer
 
 struct Layer 
+	name # name of system
 	εᵣ #electric permeability
 	μᵣ  #magnetic permeability
 	Δx #thickness in nm
@@ -43,7 +44,9 @@ end
 
 
 #param of layer: εᵣ  μᵣ  Δx (nm), σ (S/m)
-Air  = Layer(     1, 1, 800*nm,		0);
+
+
+#=Air  = Layer(     1, 1, 800*nm,		0);
 GaAs = Layer( 12.25, 1, 200*nm,		0);
 Si1 =   Layer( 11.9, 1, 200*nm,		0);
 Substrate=Layer(  5, 1,10^6*nm,    	0);
@@ -83,14 +86,10 @@ PhC₂ = [
 
 TPhQ = vcat(Air,PhC₁,PhC₂,Air)
 chip = vcat(Air,PhC₁,PhC₂,Substrate,Air)
-
+=#
 
 function main(stack,path,name,nω,smoothing)
-	#getTransmission(PhC₁, 0*THz, 1000*THz, 500, path, name)
-	#getTransmission(PhC₂, 0*THz, 1000*THz, 500, path, name)
-	#getTransmission(TPhQ, 0*THz, 1000*THz, 5000, path, name)
 	getTransmission(stack, 0*THz, 1000*THz, nω, path, name, smoothing)
-	#getTransmission(reverse(TPhC), 0*THz, 800*THz, 8000)
 end
 
 #main()
