@@ -1,16 +1,19 @@
 push!(LOAD_PATH, "./src/")
 
-
+module thinfilm
 using LinearAlgebra
 using Constants
 using ConstructHamiltonian
 using UsefulFunctions
 using PlotStuff
+using PrintStuff
 using Transmit
 #=
 # So, 
 # 
 =#
+export main, Layer
+
 struct Layer 
 	εᵣ #electric permeability
 	μᵣ  #magnetic permeability
@@ -19,7 +22,7 @@ struct Layer
 end
 
 
-function getTransmission(layers, ω_begin, ω_end, nω, avg=0)
+function getTransmission(layers, ω_begin, ω_end, nω, path, name, avg=0)
 	println("Generating code to generate T(ω)...")
 	pwSolver = pwCoeffs(layers,false);
 	Nlayers = size(layers)[1];
@@ -28,8 +31,11 @@ function getTransmission(layers, ω_begin, ω_end, nω, avg=0)
 	Tvals, ωvals = transmission(pwSolver,Nlayers,ω_begin,ω_end,nω);
 	if(avg > 0) 
 		avgTvals = movingaverage(Tvals, avg) 
+		PrintTransmission(Tvals,ωvals,path,"smooth")
 		plot1D(ωvals,avgTvals,0,1,"ω (THz)","Transmission (smooth)")
 	end
+	PrintStack(layers,path,name)
+	PrintTransmission(Tvals,ωvals,path)
 	plot1D(ωvals,Tvals,0,1,"ω (THz)","Transmission")
 end
 
@@ -77,17 +83,17 @@ TPhQ = vcat(Air,PhC₁,PhC₂,Air)
 chip = vcat(Air,PhC₁,PhC₂,Substrate,Air)
 
 
-function main()
-	getTransmission(PhC₁, 0*THz, 1000*THz, 500)
-	getTransmission(PhC₂, 0*THz, 1000*THz, 500)
-	getTransmission(TPhQ, 0*THz, 1000*THz, 5000)
-	getTransmission(chip, 0*THz, 1000*THz, 20*10^3, 8)
+function main(path,name)
+	getTransmission(PhC₁, 0*THz, 1000*THz, 500, path, name)
+	getTransmission(PhC₂, 0*THz, 1000*THz, 500, path, name)
+	getTransmission(TPhQ, 0*THz, 1000*THz, 5000, path, name)
+	getTransmission(chip, 0*THz, 1000*THz, 20*10^3, path, name, 8)
 	#getTransmission(reverse(TPhC), 0*THz, 800*THz, 8000)
 end
 
-main()
+#main()
 
-
+end
 #=
 klist = ["Γ", "M", "K", "Γ"]
 nk = 1028
