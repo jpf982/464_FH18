@@ -23,7 +23,7 @@ end
 
 
 function getTransmission(layers, ω_begin, ω_end, nω, path, name, avg=0)
-	println("Generating code to generate T(ω)...")
+	println("\nSolving Eqs to generate T(ω) for $name...")
 	pwSolver = pwCoeffs(layers,false);
 	Nlayers = size(layers)[1];
 	ω₁ = ω_begin/THz; ω₂ = ω_end/THz;
@@ -32,11 +32,13 @@ function getTransmission(layers, ω_begin, ω_end, nω, path, name, avg=0)
 	if(avg > 0) 
 		avgTvals = movingaverage(Tvals, avg) 
 		PrintTransmission(Tvals,ωvals,path,"smooth")
-		plot1D(ωvals,avgTvals,0,1,"ω (THz)","Transmission (smooth)")
+		fig = plot1D(ωvals,avgTvals,0,1,"ω (THz)","Transmission (smooth)")
+		SaveFigure(fig,path,"smooth_spectrum")
 	end
 	PrintStack(layers,path,name)
 	PrintTransmission(Tvals,ωvals,path)
-	plot1D(ωvals,Tvals,0,1,"ω (THz)","Transmission")
+	fig = plot1D(ωvals,Tvals,0,1,"ω (THz)","Transmission")
+	SaveFigure(fig,path,"spectrum")
 end
 
 
@@ -83,11 +85,11 @@ TPhQ = vcat(Air,PhC₁,PhC₂,Air)
 chip = vcat(Air,PhC₁,PhC₂,Substrate,Air)
 
 
-function main(path,name)
-	getTransmission(PhC₁, 0*THz, 1000*THz, 500, path, name)
-	getTransmission(PhC₂, 0*THz, 1000*THz, 500, path, name)
-	getTransmission(TPhQ, 0*THz, 1000*THz, 5000, path, name)
-	getTransmission(chip, 0*THz, 1000*THz, 20*10^3, path, name, 8)
+function main(stack,path,name,nω,smoothing)
+	#getTransmission(PhC₁, 0*THz, 1000*THz, 500, path, name)
+	#getTransmission(PhC₂, 0*THz, 1000*THz, 500, path, name)
+	#getTransmission(TPhQ, 0*THz, 1000*THz, 5000, path, name)
+	getTransmission(stack, 0*THz, 1000*THz, nω, path, name, smoothing)
 	#getTransmission(reverse(TPhC), 0*THz, 800*THz, 8000)
 end
 

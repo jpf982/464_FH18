@@ -3,6 +3,8 @@ push!(LOAD_PATH, "./src/")
 
 using thinfilm
 using Printf
+using Random
+using Constants
 
 function mkfolder(path)
 	if(isdir(path))
@@ -13,21 +15,41 @@ function mkfolder(path)
 	end
 end
 
+function genRandomStack() # this is arbitrary and ugly for now, do  not worry
+	Air  = Layer(     1, 1, 800*nm,		0);
+	Substrate=Layer(  5, 1,10^6*nm,    	0);
+	dx1 = 100*rand(1)[1] + 50; dx2 = 150*rand(1)[1] + 50
+	Si1 =   Layer( 11.9, 1, dx1*nm,		0);
+	Glass1= Layer(    5, 1, dx2*nm,	   	0);
+	dx1 = 200*rand(1)[1] + 100; dx2 = 200*rand(1)[1] + 100
+	Si2 =   Layer( 11.9, 1, dx1*nm,	     	0);
+	Glass2= Layer(    5, 1, dx2*nm,	   	0);
+	PhC₁ = []
+	PhC₂ = []
+	for i = 1:6
+		PhC₁ = vcat(PhC₁,Si1,Glass1)
+		PhC₂ = vcat(PhC₂,Si2,Glass2)
+	end
+	TPhQ = vcat(PhC₁,PhC₂)
+	Chip = vcat(Air,TPhQ,Substrate,Air)
+	return Chip
+end
 
-
-
-#λ = 21; σ = 1.5*nm; Δh0 = 0.7*nm; θ = 0; fᵤ = 0.0; U = 0*eV; μ = 0*eV; V₀ = 0.00*eV; U₂ = 0.00*eV
-#main(λ, σ, Δh0, fᵤ, U, μ, U₂)
+nω = 50*10^3; smoothing = 20
 
 toppath = "./testing"
 mkfolder(toppath)
 
-name = "testing"
-path = toppath*"/10-28-2020-"*name
-mkfolder(path)
+for i in 1:5
+	name="test$i"	
+	path = toppath*"/example-"*name
+	mkfolder(path)
+	chip = genRandomStack()
+	
+	main(chip,path,name,nω,smoothing)
+end
 
-main(path,name)
-#save = true
+	#save = true
 #rm(toppath, recursive=true)
 #σ1 = 0.5*nm; σ2 = 3.5*nm; dσ = 1*nm
 #h0 = 1*m; h2 = 5*nm; dh = 1*nm
