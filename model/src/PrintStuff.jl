@@ -1,16 +1,20 @@
 
 module PrintStuff
 using Printf
+using UsefulFunctions
 
 export PrintStack, PrintTransmission
 
 function PrintStack(stack, path, name)
 	fname = "stack.txt"
 	Nlayers = size(stack)[1]
+	Δz = thickness(stack)*10^(-3)
 	open(path*"/"*fname, "w") do f
 		println(f,"Name_stack = $name")
 		println(f,"#_layers = $Nlayers")
+		println(f,"total thickness (μm)  = $Δz")
 		for layer in stack
+			println(f, "$(layer)")
 			println(f, "$layer")
 		end
 	end

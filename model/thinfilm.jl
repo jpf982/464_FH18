@@ -12,7 +12,7 @@ using Transmit
 # So, 
 # 
 =#
-export main, Layer
+export main, Layer, thickness
 
 struct Layer 
 	name # name of system
@@ -22,6 +22,9 @@ struct Layer
 	σ # electrical conductivity
 end
 
+function thickness(stack)
+	return 10^9*sum([L.Δx for L in stack])
+end
 
 function getTransmission(layers, ω_begin, ω_end, nω, path, name, avg=0)
 	println("\nSolving Eqs to generate T(ω) for $name...")
@@ -40,6 +43,7 @@ function getTransmission(layers, ω_begin, ω_end, nω, path, name, avg=0)
 	PrintTransmission(Tvals,ωvals,path)
 	fig = plot1D(ωvals,Tvals,0,1,"ω (THz)","Transmission")
 	SaveFigure(fig,path,"spectrum")
+	return Tvals
 end
 
 
@@ -89,7 +93,7 @@ chip = vcat(Air,PhC₁,PhC₂,Substrate,Air)
 =#
 
 function main(stack,path,name,nω,smoothing)
-	getTransmission(stack, 0*THz, 1000*THz, nω, path, name, smoothing)
+	return getTransmission(stack, 0*THz, 1000*THz, nω, path, name, smoothing)
 end
 
 #main()

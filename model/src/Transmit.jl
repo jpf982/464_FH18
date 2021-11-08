@@ -25,7 +25,11 @@ function transmission(pwSolver,Nlayers,ω_begin,ω_end,nω=100)
 		show(x)
 		println("\n") =#
 		T = abs(x[iR])^2
-		Tvals[n] = T
+		if(ω == 0.0)
+			Tvals[n] == 1
+		else
+			Tvals[n] = T
+		end
 		n += 1
 	end
 	return Tvals, (1/THz)*ωvals

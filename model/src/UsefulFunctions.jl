@@ -12,6 +12,9 @@ function rotate(θ::Float64)
 	return [cos(θ) -sin(θ) 0; sin(θ) cos(θ) 0; 0 0 1]
 end
 
+function thickness(stack)
+	return 10^9*sum([L.Δx for L in stack])
+end
 
 function mean(v)
         N = size(v)[1]
@@ -23,6 +26,18 @@ function mean(v)
 end
 
 movingaverage(g, n) = [i < n ? mean(g[begin:i]) : mean(g[i-n+1:i]) for i in 1:length(g)]
+
+function Rmetric(f1,f2)
+	#show(f1)
+	#show(f2)
+	n = size(f1)[1]
+	sum = 0
+	for i in eachindex(f1)
+		sum += (f1[i] - f2[i])^2
+	end
+	return √(sum/n)
+end
+
 
 function eig(A, conv)
 	nA = size(A)[1]

@@ -49,7 +49,8 @@ function plot2D(Z,ymin=-4,ymax=4,xlab="",ylab="",name="")
 	xmin = 0
 	xmax = size(Z)[2]
 	
-	imshow(Z,cmap="cividis")
+	#imshow(z,cmap="cividis")
+	heatmap(z,cmap="cividis")
 	#w, h = PyPlot.figaspect(2.)
 	#fig = figure(figsize=(w, h))
     	#ax = fig.add_subplot(111)
