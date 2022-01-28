@@ -24,7 +24,7 @@ function genRandomStack(n) # this is arbitrary and ugly for now, do  not worry
 	#param of layer:name, εᵣ  μᵣ  Δx (nm), σ (S/m)
 	PhQ = []
 	for i = 1:n
-		dx1 = 100*rand(); dx2 = 100*rand();
+		dx1 = 400*rand(); dx2 = 400*rand();
 		Si 	=     	Layer("Si",	  11.9, 1, dx1*nm,	0);
 		Glass	=   	Layer("Glass",    5, 	1, dx2*nm,	0);
 		PhQ = vcat(PhQ,Glass,Si)
@@ -99,7 +99,7 @@ function TranslationSpectra(n,nω,smoothing)
 	baseChip = addAir(genRandomStack(n))
 	chip = baseChip
 	spectra = zeros(n,nω)
-	np = 10
+	np = 5
 	for m = 1:np
 		name="T_$m"	
 		path = toppath*"/permute-"*name
@@ -115,11 +115,25 @@ function TranslationSpectra(n,nω,smoothing)
 		end
 	end
 end
-nω = 8*10^3; smoothing = 1
+
+function RandomChips(n,nChips,nω,smoothing)
+	toppath = "./testing/rithvik"
+	mkfolder(toppath)
+	for m = 1:nChips
+		chip = addAir(genRandomStack(n))
+		spectra = zeros(n,nω)
+		name="T_$m"	
+		path = toppath*"/random-"*name
+		mkfolder(path)
+		T = main(chip,path,name,nω,smoothing)
+		spectra[m,:] = T
+	end
+end
 
 
+nω = 8*10^3; smoothing = 1; nChips = 5
 #TwoStageSpectra(15,nω,0.0,0.06,601,smoothing)
-TranslationSpectra(10,nω,smoothing)
+RandomChips(3,nChips,nω,smoothing)
 #=toppath = "./testing"
 mkfolder(toppath)
 
