@@ -1,0 +1,12 @@
+Name_stack = T_3
+#_layers = 8
+total thickness (nm)  = 1000.9413444303053
+# Layer key: name, rel. permittivity, rel. permeability, height (m)
+Layer("Air", 1, 1, 0.0005, 0)
+Layer("Glass", 5, 1, 2.07615171719539e-7, 0)
+Layer("Si", 11.9, 1, 2.086030333702137e-7, 0)
+Layer("Glass", 5, 1, 6.730649369755471e-8, 0)
+Layer("Si", 11.9, 1, 1.892356489521868e-7, 0)
+Layer("Glass", 5, 1, 2.2653430409623102e-7, 0)
+Layer("Si", 11.9, 1, 4.204977846897751e-8, 0)
+Layer("Air", 1, 1, 0.0005, 0)
