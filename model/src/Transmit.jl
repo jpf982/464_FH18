@@ -25,7 +25,7 @@ function transmission(pwSolver,Nlayers,ω_begin,ω_end,nω=100)
 		show(x)
 		println("\n") =#
 		T = abs(x[iR])^2
-		if(ω == 0.0)
+		if(isnan(T))
 			Tvals[n] == 1
 		else
 			Tvals[n] = T

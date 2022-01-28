@@ -43,14 +43,16 @@ end
 
 	
 
-function plot2D(Z,ymin=-4,ymax=4,xlab="",ylab="",name="")
+function plot2D(Z,xmin=-1,xmax=1,ymin=-1,ymax=2,xlab="",ylab="",cmap="inferno",name="")
 	#nY = size(yvecs)[1]
 	#for i = 1:nY
-	xmin = 0
-	xmax = size(Z)[2]
-	
+	#xmin = 0
+	#xmax = 3
+	#ymin = 0
+	#ymax = 3
 	#imshow(z,cmap="cividis")
-	heatmap(z,cmap="cividis")
+	PyPlot.imshow(Z, cmap=cmap, origin="lower", interpolation="none", aspect="auto", extent=[xmin,xmax,ymin,ymax])
+	#PyPlot.heatmap(x,y,Z,cmap="cividis")
 	#w, h = PyPlot.figaspect(2.)
 	#fig = figure(figsize=(w, h))
     	#ax = fig.add_subplot(111)
@@ -65,12 +67,12 @@ function plot2D(Z,ymin=-4,ymax=4,xlab="",ylab="",name="")
     	#cax = divider.append_axes("right", size="5%", pad=0.05)
     	#PyPlot.colorbar(fig, cax=cax)
 	#PyPlot.colorbar(label=name);
-	colorbar()
-	#=fig, ax = PyPlot.subplots();
-	PyPlot.matshow(Arr2D)
+	#colorbar()
+	#fig, ax = PyPlot.subplots();
+	#PyPlot.matshow(Arr2D)
 	PyPlot.ylabel(ylab);
 	PyPlot.xlabel(xlab);
-	#title(title)=#
+	PyPlot.title(name)
 	gcf()
 end
 
@@ -152,7 +154,12 @@ function plotSurf(x,y,z,xlab="",ylab="",name="",cmap= :redgreensplit,save=false)
 	C = 500
 	width = C
 	height = C*dy/dx
-	surf = heatmap(x,y,z, xlabel=xlab, ylabel=ylab, title=name, c = cmap, size=(width,height))
+	#surf = PyPlot.heatmap(x,y,z, xlabel=xlab, ylabel=ylab, title=name, c = cmap, size=(width,height))
+	show(size(z))
+	show(size(x))
+	show(size(y))
+	surf = Plots.heatmap(x,y,z, xlabel=xlab, ylabel=ylab, title=name, c = cmap, size=(width,height))
+	#surf = Plots.heatmap(x,y,z, xlabel=xlab, ylabel=ylab, title=name, c = cmap, size=(width,height))
 	#heatmap!
 	gui(surf)
 end

@@ -24,7 +24,7 @@ function genRandomStack(n) # this is arbitrary and ugly for now, do  not worry
 	#param of layer:name, εᵣ  μᵣ  Δx (nm), σ (S/m)
 	PhQ = []
 	for i = 1:n
-		dx1 = 150*rand(); dx2 = 150*rand();
+		dx1 = 100*rand(); dx2 = 100*rand();
 		Si 	=     	Layer("Si",	  11.9, 1, dx1*nm,	0);
 		Glass	=   	Layer("Glass",    5, 	1, dx2*nm,	0);
 		PhQ = vcat(PhQ,Glass,Si)
@@ -68,24 +68,29 @@ function genPhCStack() # this is arbitrary and ugly for now, do  not worry
 	return Chip
 end
 
-function TwoStageSpectra(n,nω,smoothing)
+function TwoStageSpectra(n,nω,dzmin,dzmax,ndz,smoothing)
 	toppath = "./testing/twostage"
 	mkfolder(toppath)
 	baseChip = genRandomStack(n)
 	baseChip2 = genRandomStack(n)
-	spectra = zeros(n,nω)
-	for Δz = 0:0.1:0.5 # spacing in mm 
+	#dzmax = 0.05; dzmin = 0.0; dz = 0.003
+	ΔzVals = collect(LinRange(dzmin,dzmax,ndz))
+	spectra = zeros(size(ΔzVals)[1],nω)
+	for i in eachindex(ΔzVals) # spacing in mm 
+		Δz = ΔzVals[i]
 		name="dz_$Δz-mm"	
 		path = toppath*"/2stage-"*name
 		mkfolder(path)
 		spacer  =  Layer("Air", 1, 1, Δz*10^6*nm,0);
 		chip = addAir(vcat(baseChip,spacer,baseChip2))
 		T = main(chip,path,name,nω,smoothing)
-		spectra[m,:] = T
+		spectra[i,:] = T
 		#show(spectra)
 		chip = Translate(chip)
 	end
-	heatmap(spectra)
+	#plotSurf(collect(LinRange(0,1000,nω)),ΔzVals,spectra',"w (THz)","Spacer Thickness (mm)")
+	#imshow(z,cmap="cividis")
+	plot2D(spectra',dzmin,dzmax,0,1000,"Spacer Thickness (mm)","ω (THz)")
 end
 
 function TranslationSpectra(n,nω,smoothing)
@@ -110,9 +115,10 @@ function TranslationSpectra(n,nω,smoothing)
 		end
 	end
 end
-nω = 2*10^3; smoothing = 10
+nω = 8*10^3; smoothing = 1
 
 
+#TwoStageSpectra(15,nω,0.0,0.06,601,smoothing)
 TranslationSpectra(10,nω,smoothing)
 #=toppath = "./testing"
 mkfolder(toppath)
