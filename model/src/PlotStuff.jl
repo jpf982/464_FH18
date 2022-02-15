@@ -51,7 +51,7 @@ function plot2D(Z,xmin=-1,xmax=1,ymin=-1,ymax=2,xlab="",ylab="",cmap="inferno",n
 	#ymin = 0
 	#ymax = 3
 	#imshow(z,cmap="cividis")
-	PyPlot.imshow(Z, cmap=cmap, origin="lower", interpolation="none", aspect="auto", extent=[xmin,xmax,ymin,ymax])
+	fig = PyPlot.imshow(Z, cmap=cmap, origin="lower", interpolation="none", aspect="auto", extent=[xmin,xmax,ymin,ymax])
 	#PyPlot.heatmap(x,y,Z,cmap="cividis")
 	#w, h = PyPlot.figaspect(2.)
 	#fig = figure(figsize=(w, h))
@@ -66,7 +66,7 @@ function plot2D(Z,xmin=-1,xmax=1,ymin=-1,ymax=2,xlab="",ylab="",cmap="inferno",n
     	#divider = PyPlot.make_axes_locatable(ax)
     	#cax = divider.append_axes("right", size="5%", pad=0.05)
     	#PyPlot.colorbar(fig, cax=cax)
-	#PyPlot.colorbar(label=name);
+	PyPlot.colorbar();
 	#colorbar()
 	#fig, ax = PyPlot.subplots();
 	#PyPlot.matshow(Arr2D)

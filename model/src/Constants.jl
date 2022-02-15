@@ -38,6 +38,7 @@ else
 	THz = 10^12
 	r₀ = 5.29E-11
 	Ry = m₀*q^4 / (8*h^2*ϵ₀^2)
+	c = 2.997*10^8
 	μB = 5.788838E-5 # bohr magneton in eV/T
 end
 
@@ -45,6 +46,7 @@ end
 #Å = 1.8897 * r0 	#angstrom, in hartree units
 #nm = 10 * Å 		#angstrom, in hartree units
 kT = 0.02585*eV 	#DUBIOUS!!! kT @ 293K in hartree units??
+η₀ = √(μ₀/ε₀)
 #metre = 10^10 * Å
 
 # for Si in particular
