@@ -12,10 +12,11 @@ function PrintStack(stack, path, name)
 	open(path*"/"*fname, "w") do f
 		println(f,"Name_stack = $name")
 		println(f,"#_layers = $Nlayers")
-		println(f,"total thickness (μm)  = $Δz")
+		println(f,"total thickness (nm)  = $Δz")
+		println(f,"# Layer key: name, rel. permittivity, rel. permeability, height (m)")
 		for layer in stack
 			println(f, "$(layer)")
-			println(f, "$layer")
+			#println(f, "$layer")
 		end
 	end
 	println("Stack details printed to .$path/$fname")

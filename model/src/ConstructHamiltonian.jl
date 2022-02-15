@@ -25,13 +25,14 @@ end =#
 
 
 struct PW
-	i::Int #layer index of corresponding PWs
+	i #layer index of corresponding PWs
 	γ # goes in eq exp(γ⋅R)
 	η # intrinsic impedance
 	edgeL
 	edgeR
+	n # refractive index
+	kzᵢ # angle of light in layer
 end
-
 
 
 function pwCoeffs(layers, wrap=false)
@@ -39,7 +40,7 @@ function pwCoeffs(layers, wrap=false)
 	N = 2*Nlayers
 	
 	PWs = PW[]
-	n = 1 #PW num
+	i = 1 #PW num
 	xL = 0 #left edge of particular layer
 	xR = 0 #right edge
 	for L in layers
@@ -48,20 +49,34 @@ function pwCoeffs(layers, wrap=false)
 		#η = ω -> √((L.μᵣ*μ₀)/(L.εᵣ*ε₀)) 
 		γ = ω -> √(im*ω*L.μᵣ*μ₀*(L.σ + im*ω*L.εᵣ*ε₀)) 
 		η = ω -> √(im*ω*L.μᵣ*μ₀/(L.σ + im*ω*L.εᵣ*ε₀)) 
-		PWlayer = PW(n,γ,η,xL,xR)
+		n = ω -> η₀/η(ω)
+		kzᵢ(kx₀,kz₀,ω) = (1/n(ω))*√( kz₀^2 + (1-n(ω)^2)*kx₀^2 )
+		#n = √(L.μᵣ*L.εᵣ)
+		#=function θᵢ(θ₀) # in case the angle is greater than the critical angle.
+			ret = sin(θ₀)/n(ω)
+			if((ret < 1) && (ret > -1)) # if outside of domain of arcsin
+				return asin(ret)
+			else
+				return π # this is possibly bad practice
+			end
+		end=#
+
+		PWlayer = PW(i,γ,η,xL,xR,n,kzᵢ)
 		xL += L.Δx
 		push!(PWs,PWlayer)
-		n += 1
+		i += 1
 	end
 	
-	
-	function pwSolver(ω)
+	function pwSolver(ω, θ₀=0)
 		# set up Ax = b
 		# x = array of PW coefficients for [each layer] ⊗ [left, right movers]
 		
 		# we will consider the "first" interface at x = 0.
 		# initialize beginning right-moving wave amplitude = 1
 		#A[1,1] = 1; b[1] = 1
+		k₀ = ω/c
+		kx₀ = sin(θ₀)*k₀
+		kz₀ = cos(θ₀)*k₀
 		if(wrap == false)
 			A = zeros(ComplexF64,N,N) #generate matrix of coefficients to give to H(k)
 			#A = zeros(Complex{BigFloat},N,N) #generate matrix of coefficients to give to H(k)
@@ -86,19 +101,30 @@ function pwCoeffs(layers, wrap=false)
 		for i = 2:Nlayers
 			#the two layers around an interface:
 			L1 = PWs[i-1]; L2 = PWs[i]
+			
+			# first, determine if light can penetrate into second layer
+			kz₁ = L1.kzᵢ(kx₀,kz₀,ω); kz₂ = L2.kzᵢ(kx₀,kz₀,ω);
+			#println("kz₁ = $kz₁; kz₂ = $kz₂")
+			#=if(θ₂ == π) # as defined in θᵢ, flag to reflect back. Force L2 PW coeffs to 0. 
+				Rflag = 0
+				println("Ah! Critical angle nonsense")
+			else
+				Rflag = 1
+			end=#
+
 			# first solve Eᵢ = Eᵢ₊₁
 			iE = 2*i - 1 # row to insert in matrix
-			A[iE,2*i-3] = exp(L1.γ(ω)*L1.edgeR); 
-			A[iE,2*i-2] = exp(-L1.γ(ω)*L1.edgeR);
-			A[iE,2*i-1] = -exp(L2.γ(ω)*L2.edgeL);
-			A[iE,2*i]   = -exp(-L2.γ(ω)*L2.edgeL);
+			A[iE,2*i-3] =  exp(im* kz₁*L1.edgeR); 
+			A[iE,2*i-2] =  exp(im*-kz₁*L1.edgeR);
+			A[iE,2*i-1] = -exp(im* kz₂*L2.edgeL);
+			A[iE,2*i]   = -exp(im*-kz₂*L2.edgeL);
 		
 			#then solve Hᵢ = -Hᵢ₊₁
 			iH = 2*i
-			A[iH,2*i-3] = exp(L1.γ(ω)*L1.edgeR)/L1.η(ω); 
-			A[iH,2*i-2] = -exp(-L1.γ(ω)*L1.edgeR)/L1.η(ω);
-			A[iH,2*i-1] = -exp(L2.γ(ω)*L2.edgeL)/L2.η(ω);
-			A[iH,2*i]   = exp(-L2.γ(ω)*L2.edgeL)/L2.η(ω);
+			A[iH,2*i-3] =  exp(im* kz₁*L1.edgeR)/L1.η(ω); 
+			A[iH,2*i-2] = -exp(im*-kz₁*L1.edgeR)/L1.η(ω);
+			A[iH,2*i-1] = -exp(im* kz₂*L2.edgeL)/L2.η(ω);
+			A[iH,2*i]   =  exp(im*-kz₂*L2.edgeL)/L2.η(ω);
 		end
 		#A .+= 10^-12*Diagonal(ones(N))
 		return A, b
