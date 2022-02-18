@@ -102,15 +102,8 @@ function pwCoeffs(layers, wrap=false)
 			#the two layers around an interface:
 			L1 = PWs[i-1]; L2 = PWs[i]
 			
-			# first, determine if light can penetrate into second layer
+			# generate wavenumbers in layer i-1, i
 			kz₁ = L1.kzᵢ(kx₀,kz₀,ω); kz₂ = L2.kzᵢ(kx₀,kz₀,ω);
-			#println("kz₁ = $kz₁; kz₂ = $kz₂")
-			#=if(θ₂ == π) # as defined in θᵢ, flag to reflect back. Force L2 PW coeffs to 0. 
-				Rflag = 0
-				println("Ah! Critical angle nonsense")
-			else
-				Rflag = 1
-			end=#
 
 			# first solve Eᵢ = Eᵢ₊₁
 			iE = 2*i - 1 # row to insert in matrix
