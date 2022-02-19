@@ -8,6 +8,9 @@ using UsefulFunctions
 using PlotStuff
 using PrintStuff
 using Transmit
+using Dielectric
+
+
 #=
 # So, 
 # 
@@ -128,7 +131,7 @@ chip = vcat(Air,PhC₁,PhC₂,Substrate,Air)
 
 function main(stack,path,name,nω,smoothing,θ_begin=0, θ_end=0, nθ=1)
 	ω_begin = 0*THz
-	ω_end = 5000*THz
+	ω_end = 6500*THz
 	if(θ_end > 0 && nθ > 1)
 		return getTransmissionVsAngle(stack, ω_begin, ω_end, nω, θ_begin, θ_end, nθ, path, name, smoothing)
 	else

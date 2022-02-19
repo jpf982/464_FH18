@@ -18,15 +18,15 @@ function mkfolder(path)
 end
 	
 Air  = 		Layer("Air",     	1, 1, 0.5*10^6*nm,		0);
-Substrate=	Layer("Substrate",  	5, 1,10^6*nm,    	0);
+Substrate=	Layer("Glass",  	5, 1,10^6*nm,    	0);
 
 function genRandomStack(n) # this is arbitrary and ugly for now, do  not worry
 	#param of layer:name, εᵣ  μᵣ  Δx (nm), σ (S/m)
 	PhQ = []
 	for i = 1:n
-		dx1 = 300*rand(); dx2 = 400*rand();
+		dx1 = 40*rand(); dx2 = 400*rand();
 		Si 	=     	Layer("Si",	  11.9, 1, dx1*nm, 10^(-3));
-		Glass	=   	Layer("Glass",    5, 	1, dx2*nm, 10^(-11));
+		Glass	=   	Layer("SiO2",    5, 	1, dx2*nm, 10^(-11));
 		PhQ = vcat(PhQ,Glass,Si)
 	end
 	return PhQ
@@ -47,7 +47,7 @@ function Translate(stack, air=true)
 	return Tstack
 end
 
-function genPhCStack() # this is arbitrary and ugly for now, do  not worry
+function genPhCStack(n) # this is arbitrary and ugly for now, do  not worry
 	#param of layer:name, εᵣ  μᵣ  Δx (nm), σ (S/m)
 	Air  = 	  Layer("Air",     1, 1, 800*nm,		0);
 	Substrate=Layer("Substrate",  5, 1,10^6*nm,    	0);
@@ -59,13 +59,13 @@ function genPhCStack() # this is arbitrary and ugly for now, do  not worry
 	Glass2=   Layer("SiO2",    5, 1, dx2*nm,	   	0);
 	PhC₁ = []
 	PhC₂ = []
-	for i = 1:6
+	for i = 1:n
 		PhC₁ = vcat(PhC₁,Si1,Glass1)
 		PhC₂ = vcat(PhC₂,Si2,Glass2)
 	end
 	TPhQ = vcat(PhC₁,PhC₂)
-	Chip = vcat(Air,TPhQ,Substrate,Air)
-	return Chip
+	#Chip = vcat(Air,TPhQ,Substrate,Air)
+	return TPhQ
 end
 
 function TwoStageSpectra(n,nω,dzmin,dzmax,ndz,smoothing)
@@ -131,19 +131,21 @@ function RandomChips(n,nChips,nω,smoothing)
 end
 
 
-nω = 1*10^3; smoothing = 5; nChips = 5; n = 7
-nθ = 200; 
+nω = 4000; smoothing = 15; nChips = 5; n = 20
+θ₁ = 0; θ₂ = 20; 
+nθ = 60; 
 #TwoStageSpectra(15,nω,0.0,0.06,601,smoothing)
 #RandomChips(3,nChips,nω,smoothing)
 
-toppath = "./testing/angle"
+toppath = "./testing/kktest"
 mkfolder(toppath)
 for m = 1:nChips
-	chip = addAir(genRandomStack(n))
+	#chip = vcat(Air,genPhCStack(n),Substrate,Air)
+	chip = vcat(Air,genRandomStack(n),Substrate,Air)
 	name="T_$m"	
 	path = toppath*"/random-"*name
 	mkfolder(path)
-	main(chip,path,name,nω,smoothing,0,20,nθ)
+	main(chip,path,name,nω,smoothing,θ₁,θ₂,nθ)
 end
 
 #=toppath = "./testing"

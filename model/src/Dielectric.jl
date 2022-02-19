@@ -6,9 +6,10 @@ using LinearAlgebra
 using Arpack
 using Constants
 using Interpolations
+using UsefulFunctions
 using PyPlot
 
-export ε_mat
+export ε_mat,plotkk
 
 function ∫(fgrid,xgrid,x₁,dx,x₂)
 	sum = 0
@@ -25,14 +26,21 @@ end
 
 dE = 0.0005*eV
 ΔE = 10*dE
-E₁ = 0*eV; E₂ = 9*eV
+E₁ = 0*eV; E₂ = 10*eV
 Egrid = E₁:dE:E₂
 A = 43.1409 # taken from my DFT homework
-g(x,μ,σ) = exp(-(x-μ)^2/(2*σ^2))
-l(x,μ,w) = w^2/(4*(x-μ)^2 + w^2)
-#ε₂si(E) = 35*g(E,3.2,0.3) + 40*g(E,4.5,0.5) + 10*g(E,5.2,0.4)
-ε₂si(E) = 25*l(E,3.2,0.2) + 25*g(E,3.65,0.25) + 35*l(E,4.1,0.3) + 10*l(E,5.2,2)
-#ε₂si(E) = *exp(-(E-4)^2/2)
+g(x,μ,σ) = exp(-(x-μ)^2/(2*σ^2)) - exp(-(-μ)^2/(2*σ^2))
+l(x,μ,w) = w^2/(4*(x-μ)^2 + w^2) - w^2/(4*(0-μ)^2 + w^2)
+
+# perfect Si
+#ε₂si(E) = 25*l(E,3.2,0.2) + 25*g(E,3.65,0.25) + 35*l(E,4.1,0.3) + 10*l(E,5.2,2)
+
+# c-Si
+#ε₂si(E) = 20*l(E,3.4,0.5) + 48*l(E,4.2,1.2)
+
+# nc-Si
+ε₂si(E) = 3*g(E,3.4,0.2) + 35*g(E,4.35,1.0)
+
 ε₂ = ε₂si.(Egrid)
 
 
@@ -40,18 +48,22 @@ println("Pre-calculating Kramers-Kronig ε₁(ω). Performing integral, please h
 #ε₁si(E) = 1 + (2/π)*∫( (ε₂), Egrid, 0,dE,E)
 ε₁si(E) = 1 + (2/π)*∫( (ε₂.*Egrid ./ (Egrid.^2 .- E^2)), Egrid, E₁, dE, E-ΔE) + 
               (2/π)*∫( (ε₂.*Egrid ./ (Egrid.^2 .- E^2)), Egrid, E+ΔE, dE, E₂)
-ε₁ = ε₁si.(Egrid)
+ε₁ = movingaverage(ε₁si.(Egrid),15)
 println("Done!")
 
 ε₁intp = LinearInterpolation(Egrid,ε₁)
 ε₂intp = LinearInterpolation(Egrid,ε₂)
 
 #=println("Plotting..")
-plot(Egrid,ε₁)
-plot(Egrid,ε₂)
-fig = gcf()
-display(fig)
 #plot!(Egrid,ε₁)=#
+function plotkk()
+	plot(Egrid,ε₁)
+	plot(Egrid,ε₂)
+	fig = gcf()
+	display(fig)
+end
+
+plotkk()
 
 
 function ε_mat(material)
