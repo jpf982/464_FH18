@@ -13,10 +13,19 @@ function PrintStack(stack, path, name)
 		println(f,"Name_stack = $name")
 		println(f,"#_layers = $Nlayers")
 		println(f,"total thickness (nm)  = $Δz")
-		println(f,"# Layer key: name, rel. permittivity, rel. permeability, height (m)")
+		println(f,"# Layer key: name, rel. permittivity, rel. permeability, height (nm), dep time (min)")
 		for layer in stack
-			println(f, "$(layer)")
-			#println(f, "$layer")
+			#@printf ("L-%i_S-%g_dh0-%g_fu-%g_theta-%g_U-%g_mu-%g_V0-%g_U2-%g",λ,σ,Δh0,fᵤ,θ,U,μ,V₀,U₂)
+			name = layer.name; er = layer.εᵣ; ur = layer.μᵣ; dx = layer.Δx*10^9;
+			if(name == "Si")
+				v = 4.5 # m/s
+			elseif(name == "Glass")
+				v = 43
+			else
+				v = 10^9
+			end
+			time = dx/(v)
+			println(f, "$name \t $er \t $ur \t $dx \t $time")
 		end
 	end
 	println("Stack details printed to .$path/$fname")

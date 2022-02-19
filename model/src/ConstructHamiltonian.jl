@@ -7,6 +7,7 @@ using LinearAlgebra
 using Operators
 using UsefulFunctions
 using Constants
+using Dielectric
 
 export pwCoeffs
 
@@ -45,22 +46,15 @@ function pwCoeffs(layers, wrap=false)
 	xR = 0 #right edge
 	for L in layers
 		xR += L.Δx
-		#γ = ω -> abs(ω)*√(L.μᵣ*μ₀*L.εᵣ*ε₀)
-		#η = ω -> √((L.μᵣ*μ₀)/(L.εᵣ*ε₀)) 
-		γ = ω -> √(im*ω*L.μᵣ*μ₀*(L.σ + im*ω*L.εᵣ*ε₀)) 
-		η = ω -> √(im*ω*L.μᵣ*μ₀/(L.σ + im*ω*L.εᵣ*ε₀)) 
-		n = ω -> η₀/η(ω)
-		kzᵢ(kx₀,kz₀,ω) = (1/n(ω))*√( kz₀^2 + (1-n(ω)^2)*kx₀^2 )
-		#n = √(L.μᵣ*L.εᵣ)
-		#=function θᵢ(θ₀) # in case the angle is greater than the critical angle.
-			ret = sin(θ₀)/n(ω)
-			if((ret < 1) && (ret > -1)) # if outside of domain of arcsin
-				return asin(ret)
-			else
-				return π # this is possibly bad practice
-			end
-		end=#
-
+		εᵣ = ε_mat(L.name)
+		γ = ω -> √(im*ω*L.μᵣ*μ₀*(im*ω*εᵣ(ω)*ε₀)) 
+		#γ = ω -> √(im*ω*L.μᵣ*μ₀*(im*ω*εᵣ(ω)*ε₀)) 
+		#η = ω -> √(im*ω*L.μᵣ*μ₀/(im*ω*εᵣ(ω)*ε₀)) 
+		n = ω -> √(εᵣ(ω)*L.μᵣ)
+		η = ω -> η₀/n(ω)
+		#n = ω -> η₀/η(ω)
+		kzᵢ(kx₀,kz₀,ω) = √(kz₀^2 + (1/n(ω)^2 - 1)*kx₀^2)
+		#kzᵢ(kx₀,kz₀,ω) = (1/n(ω))*√( kz₀^2 + (1-n(ω)^2)*kx₀^2 )
 		PWlayer = PW(i,γ,η,xL,xR,n,kzᵢ)
 		xL += L.Δx
 		push!(PWs,PWlayer)
