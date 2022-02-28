@@ -2,6 +2,7 @@
 # coding: utf-8
 
 import numpy as np
+import collections as col
 from copy import *
 from databaseHeader import deviceList, keyList 
 
@@ -15,7 +16,8 @@ from databaseHeader import deviceList, keyList
 def L2norm(npoints, Tvals1, Tvals2):
 
     # check, make sure arrays are same size
-    if(fvals1.size != fvals2.size or Tvals1.size != Tvals2.size):
+    #if(fvals1.size != fvals2.size or Tvals1.size != Tvals2.size):
+    if(Tvals1.size != Tvals2.size):
         raise Exception("How did you get here? Check the size of your test and device spectra")
     nTvals = Tvals1.size
     if(npoints == 0): # use all points in spectra! We should do this by default
@@ -40,18 +42,18 @@ class Authenticator:
     # returns PhQ ID string (success) or false (rejection)
 
     #Initialize authenticator with inputs:
-    # Arbitrary metric cutoff (float)
+    # Arbitrary metric cutoff (float) (0.05 for a test metricCutoff)
     # array of freq. vals from FTIR
     # array of T vals from FTIR
     # list of devices in DB
-    # ID of the lock that the authenticator is running on
+    # ID of the lock that the authenticator is running on ( make it anything atm "Kilimanjaro")
 
     def __init__(self, _metricCutoff, _testFreqvals, _testTvals, _lockID, _deviceDB=None):
         self.metricCutoff = _metricCutoff
         self.testFreqvals = deepcopy(_testFreqvals)
         self.testTvals = deepcopy(_testTvals)
         if(_deviceDB == None):
-            _deviceD == deviceList()
+            _deviceDB == deviceList()
         self.deviceDB = _deviceDB # do not want a copy of the whole database! very silly. only ptrs
         self.lockID = _lockID
         # establish some facts about the test data
@@ -60,24 +62,26 @@ class Authenticator:
         self.minfreq = np.amin(_testFreqvals)
 
     # useful definition for affiliating devices with scores in authenticator
-    DeviceScore = namedtuple('DeviceScore', 'DeviceID score')
+    # DeviceScore = col.namedtuple('DeviceScore', 'DeviceID score')
+    #!! DOES DeviceScore ABOVE BELONG IN __init__ OR calculateMetrics FUNCTION? !!
 
     
     # Prime the authenticator, calculate matches
     # call with accuracy = 0 for full L^2 norm.
     # else call with n random points to estimate integral.
 
-    def calculateMetrics(accuracy): # accuracy = how many sample points in spectra. 0 = ALL
+    def calculateMetrics(self, accuracy): # accuracy = how many sample points in spectra. 0 = ALL
+        DeviceScore = col.namedtuple('DeviceScore', 'DeviceID score') #Line from above. Does it belong here?
         deviceScores = []
         print("Testing spectra with accuracy " + str(accuracy) + " points. \n If npoints == 0, using full spectrum")
-        print("Number of devices to test = " + str(len(deviceDB)))
-        for device in deviceDB: # loop over the devices and test them
-            if(device.npoints != npoints or device.maxf != maxfreq or device.minf != minfreq):
+        print("Number of devices to test = " + str(len(self.deviceDB)))
+        for device in self.deviceDB: # loop over the devices and test them
+            if(device.npoints != self.npoints or device.maxf != self.maxfreq or device.minf != self.minfreq):
                 raise Exception("The test spectrum and device spectra are not on identical frequency grids. Fix this!")
-            metric = L2norm(accuracy,testTvals,device.Tvals) # perform test
+            metric = L2norm(accuracy,self.testTvals,device.Tvals) # perform test
             deviceScore = DeviceScore(deepcopy(device.identity),metric) # make a named tuple, sort of like C struct
             deviceScores.append(deviceScore)
-        self.DevicesAndScores = sorted(seq, key=lambda x: x.score) # sort based on metric
+        self.DevicesAndScores = sorted(deviceScores, key=lambda x: x.score) # sort based on metric
         print("Authenticator is primed.")
         print(str(self.DevicesAndScores))
         return 
@@ -85,27 +89,28 @@ class Authenticator:
     # Finish the authentication
     # Return PhQ ID if successful, false if rejected
 
-    def authenticate:
-        try: BestDevice = DevicesAndScores[0].DeviceID
-            except NameError: 
+    def authenticate(self):
+        try: 
+            BestDevice = self.DevicesAndScores[0].DeviceID
+        except NameError: 
                 print("One must calculate the metrics first!")
                 self.getMetrics(0) #need to initialize the metrics first!
-                BestDevice = DevicesAndScores[0].DeviceID
+                BestDevice = self.DevicesAndScores[0].DeviceID
         else: 
-            metric = DevicesAndScores[0].score
+            metric = self.DevicesAndScores[0].score
         print("Best match: " + BestDevice)
         print("Norm of " + BestDevice + " and test spectrum = " + str(metric))
-        print("With cutoff = " + metricCutoff)
-        acceptedKeys = keyList(lockID) 
+        print("With cutoff = " + self.metricCutoff)
+        acceptedKeys = keyList(self.lockID) 
         acceptKey = (BestDevice in acceptedKeys)
-        if(metric < metricCutoff and acceptKey):
+        if(metric < self.metricCutoff and acceptKey):
             print("Photonic Quasicrystal accepted!")
             return BestDevice
         else:
-            if(metric >= metricCutoff): 
+            if(metric >= self.metricCutoff): 
                 print("Photonic Quasicrystal rejected! Not Recognized.")
             if(acceptKey != True):
                 print("Photonic Quasicrystal rejected! Key not authorized.")
-            return false
+            return False
 
 
