@@ -18,6 +18,8 @@ Pkg.add("LinearAlgebra")
 Pkg.add("Arpack")
 Pkg.add("Plots")
 Pkg.add("PyPlot")
+Pkg.add("Interpolations")
+Pkg.add("Distributions")
 Pkg.add("ColorSchemes")
 EOF
 

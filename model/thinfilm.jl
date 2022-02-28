@@ -59,7 +59,7 @@ function getTransmissionVsAngle(layers, ω_begin, ω_end, nω, θ_begin, θ_end,
 		fig = plot2D(avgspectra',θ_begin,θ_end,ω_begin*ħ/q,ω_end*ħ/q,"Angle (°)","E (eV)","inferno","T(θ,E)")
 		SaveFigure(fig,path,"avgspectrum_angle")
 	end
-	return spectra
+	return avgspectra
 end
 
 

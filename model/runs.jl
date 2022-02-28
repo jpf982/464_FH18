@@ -4,9 +4,11 @@ push!(LOAD_PATH, "./src/")
 using thinfilm
 using Printf
 using Random
+using Distributions
 using PlotStuff
 using UsefulFunctions
 using Constants
+using Random
 
 function mkfolder(path)
 	if(isdir(path))
@@ -20,11 +22,25 @@ end
 Air  = 		Layer("Air",     	1, 1, 0.5*10^6*nm,		0);
 Substrate=	Layer("Glass",  	5, 1,10^6*nm,    	0);
 
+function genGaussianRandomStack(n) # this is arbitrary and ugly for now, do  not worry
+	#param of layer:name, εᵣ  μᵣ  Δx (nm), σ (S/m)
+	PhQ = []
+	dx1 = Normal(40,2)
+	dx2 = Normal(200,10)
+	for i = 1:n
+		#dx1 = 80*rand(); dx2 = 400*rand();
+		Si 	=     	Layer("Si",	  11.9, 1, rand(dx1)*nm, 10^(-3));
+		Glass	=   	Layer("SiO2",    5, 	1, rand(dx2)*nm, 10^(-11));
+		PhQ = vcat(PhQ,Glass,Si)
+	end
+	return PhQ
+end
+
 function genRandomStack(n) # this is arbitrary and ugly for now, do  not worry
 	#param of layer:name, εᵣ  μᵣ  Δx (nm), σ (S/m)
 	PhQ = []
 	for i = 1:n
-		dx1 = 40*rand(); dx2 = 400*rand();
+		dx1 = 80*rand(); dx2 = 400*rand();
 		Si 	=     	Layer("Si",	  11.9, 1, dx1*nm, 10^(-3));
 		Glass	=   	Layer("SiO2",    5, 	1, dx2*nm, 10^(-11));
 		PhQ = vcat(PhQ,Glass,Si)
@@ -93,6 +109,28 @@ function TwoStageSpectra(n,nω,dzmin,dzmax,ndz,smoothing)
 	plot2D(spectra',dzmin,dzmax,0,1000,"Spacer Thickness (mm)","ω (THz)")
 end
 
+function offsetSpectra(nChips,n,nω,smoothing)
+	toppath = "./testing/gaussianOffset"
+	mkfolder(toppath)
+	spectra = zeros(nChips,nω)
+	for m = 1:nChips
+		#chip = vcat(Air,genPhCStack(n),Substrate,Air)
+		chip = vcat(Air,genGaussianRandomStack(n),Substrate,Air)
+		name="T_$m"	
+		path = toppath*"/random-"*name
+		mkfolder(path)
+		T = main(chip,path,name,nω,smoothing)
+		#avgspectra = main(chip,path,name,nω,smoothing,θ₁,θ₂,nθ)
+		#spectra[m,:] = avgspectra[1,:]
+		spectra[m,:] = T
+	end
+	for i = 1:nChips
+		for j = (i+1):nChips
+			println("m(T$i,T$j) = $(Rmetric(spectra[i,:],spectra[j,:]))")
+		end
+	end
+end
+
 function TranslationSpectra(n,nω,smoothing)
 	toppath = "./testing/permute"
 	mkfolder(toppath)
@@ -131,13 +169,15 @@ function RandomChips(n,nChips,nω,smoothing)
 end
 
 
-nω = 4000; smoothing = 15; nChips = 5; n = 20
+nω = 4000; smoothing = 15; nChips = 5; n = 3
 θ₁ = 0; θ₂ = 20; 
 nθ = 60; 
 #TwoStageSpectra(15,nω,0.0,0.06,601,smoothing)
 #RandomChips(3,nChips,nω,smoothing)
 
-toppath = "./testing/kktest"
+offsetSpectra(nChips,n,nω,smoothing)
+
+#=toppath = "./testing/kktest"
 mkfolder(toppath)
 for m = 1:nChips
 	#chip = vcat(Air,genPhCStack(n),Substrate,Air)
@@ -146,7 +186,7 @@ for m = 1:nChips
 	path = toppath*"/random-"*name
 	mkfolder(path)
 	main(chip,path,name,nω,smoothing,θ₁,θ₂,nθ)
-end
+end=#
 
 #=toppath = "./testing"
 mkfolder(toppath)
