@@ -17,8 +17,8 @@ def getSpectrum(dbase, path) :
     print("Got spectrum.")
     return spectrum
 
-#function to validate the key
-def validateKey() :
+#function to check the key for values outside 0 and 1
+def preprocessKey() :
     return True
 
 #function to set the values in the authenticator object
@@ -43,11 +43,11 @@ def main() :
         keyID = input("Provide keyID: ")
         print("Getting spectrum...")
         spectrum = getSpectrum(dbase, path)
-        print("Validating key...")
-        if validateKey() :
-            print("Key validated.")
+        print("Preprocessing key...")
+        if preprocessKey() :
+            print("Key preprocessed.")
         else :
-            print("Invalid key.")
+            print("Key values detected outside acceptable range.")
             break
         if response == 'A' :
             print("Inserting key to database...")
