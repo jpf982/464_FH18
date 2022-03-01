@@ -6,13 +6,10 @@ import collections as col
 from copy import *
 from databaseHeader import deviceList, keyList 
 
-
-
 # Compute the L^2 norm of two arrays, Tvals1 and Tvals2
 # = C * \int_{\inf}^{\inf} \sqrt{(f_1(x)-f_2(x))^2} dx 
 # set npoints = 0 for full L^2 norm, else set 
 # npoints to number of random points to sample
-
 def L2norm(npoints, Tvals1, Tvals2):
 
     # check, make sure arrays are same size
@@ -31,9 +28,6 @@ def L2norm(npoints, Tvals1, Tvals2):
         metric = (1/npoints)*np.sqrt(intsum)
     return metric
 
-
-
-
 class Authenticator: 
     
     # To use: Give correct inputs, and instantiate authenticator.
@@ -41,13 +35,12 @@ class Authenticator:
     # Afterwards, call auth.authenticate to check on the best match, and accept/reject it.
     # returns PhQ ID string (success) or false (rejection)
 
-    #Initialize authenticator with inputs:
+    #Initialize authenticator with parameters:
     # Arbitrary metric cutoff (float) (0.05 for a test metricCutoff)
     # array of freq. vals from FTIR
     # array of T vals from FTIR
     # list of devices in DB
     # ID of the lock that the authenticator is running on ( make it anything atm "Kilimanjaro")
-
     def __init__(self, _metricCutoff, _testFreqvals, _testTvals, _lockID, _deviceDB=None):
         self.metricCutoff = _metricCutoff
         self.testFreqvals = deepcopy(_testFreqvals)
@@ -61,20 +54,25 @@ class Authenticator:
         self.maxfreq = np.amax(_testFreqvals)
         self.minfreq = np.amin(_testFreqvals)
 
-    # useful definition for affiliating devices with scores in authenticator
-    # DeviceScore = col.namedtuple('DeviceScore', 'DeviceID score')
-    #!! DOES DeviceScore ABOVE BELONG IN __init__ OR calculateMetrics FUNCTION? !!
-
+    #default constructor with no parameters
+    def __init__(self):
+        self.metricCutoff = 0.1
+        self.testFreqvals = []
+        self.testTvals = []
+        self.deviceDB = deviceList()
+        self.lockID = 0
+        self.npoints = 0
+        self.maxfreq = 100000.0
+        self.minfreq = 0.000001
     
     # Prime the authenticator, calculate matches
     # call with accuracy = 0 for full L^2 norm.
     # else call with n random points to estimate integral.
-
     def calculateMetrics(self, accuracy): # accuracy = how many sample points in spectra. 0 = ALL
         DeviceScore = col.namedtuple('DeviceScore', 'DeviceID score') #Line from above. Does it belong here?
         deviceScores = []
-        print("Testing spectra with accuracy " + str(accuracy) + " points. \n If npoints == 0, using full spectrum")
-        print("Number of devices to test = " + str(len(self.deviceDB)))
+        print("Testing spectra with accuracy ", str(accuracy), " points. \n If npoints == 0, using full spectrum")
+        print("Number of devices to test = ", str(len(self.deviceDB)))
         for device in self.deviceDB: # loop over the devices and test them
             if(device.npoints != self.npoints or device.maxf != self.maxfreq or device.minf != self.minfreq):
                 raise Exception("The test spectrum and device spectra are not on identical frequency grids. Fix this!")
@@ -88,7 +86,6 @@ class Authenticator:
 
     # Finish the authentication
     # Return PhQ ID if successful, false if rejected
-
     def authenticate(self):
         try: 
             BestDevice = self.DevicesAndScores[0].DeviceID
@@ -98,9 +95,9 @@ class Authenticator:
                 BestDevice = self.DevicesAndScores[0].DeviceID
         else: 
             metric = self.DevicesAndScores[0].score
-        print("Best match: " + BestDevice)
-        print("Norm of " + BestDevice + " and test spectrum = " + str(metric))
-        print("With cutoff = " + self.metricCutoff)
+        print("Best match: ", BestDevice)
+        print("Norm of ", BestDevice, " and test spectrum = ", str(metric))
+        print("With cutoff = ", self.metricCutoff)
         acceptedKeys = keyList(self.lockID) 
         acceptKey = (BestDevice in acceptedKeys)
         if(metric < self.metricCutoff and acceptKey):
@@ -113,4 +110,12 @@ class Authenticator:
                 print("Photonic Quasicrystal rejected! Key not authorized.")
             return False
 
-
+    #sets object attributes based on parameters
+    def setValues(self, _metricCutoff, _testFreqvals, _testTvals, _lockID):
+        self.metricCutoff = _metricCutoff
+        self.testFreqvals = deepcopy(_testFreqvals)
+        self.testTvals = deepcopy(_testTvals)
+        self.lockID = _lockID
+        self.npoints = _testFreqvals.size()
+        self.maxfreq = np.amax(_testFreqvals)
+        self.minfreq = np.amin(_testFreqvals)
