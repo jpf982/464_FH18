@@ -7,15 +7,28 @@ import pandas as pd
 
 
 class database:
-    def __init__():
+    def __init__(self):
+        self.conn = sqlite3.connect(r'./database.db')
+
+    def readFile(self, path):
+        df = pd.read_csv(path, sep=':', engine='python')
+        return df
         
-    def insert():
+    def insert(self, spectrum):
+        spectrum.to_sql('trm', self.conn, if_exists='append', index=False)
+        return 0
             
-    def remove():
+    def remove(self):
+        return 0
 
-    def deviceList():
+    def deviceList(self):
+        return 0
 
-    def keyList():
+    def keyList(self):
+        return 0
+
+    def exitDB(self):
+        self.conn.close()
 
 
 # Load data into Pandas DataFrame
