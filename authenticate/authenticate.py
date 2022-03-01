@@ -4,7 +4,7 @@
 import numpy as np
 import collections as col
 from copy import *
-from databaseHeader import deviceList, keyList 
+from database import db
 
 # Compute the L^2 norm of two arrays, Tvals1 and Tvals2
 # = C * \int_{\inf}^{\inf} \sqrt{(f_1(x)-f_2(x))^2} dx 
@@ -46,7 +46,7 @@ class Authenticator:
         self.testFreqvals = deepcopy(_testFreqvals)
         self.testTvals = deepcopy(_testTvals)
         if(_deviceDB == None):
-            _deviceDB == deviceList()
+            _deviceDB == db.deviceList()
         self.deviceDB = _deviceDB # do not want a copy of the whole database! very silly. only ptrs
         self.lockID = _lockID
         # establish some facts about the test data
@@ -59,7 +59,7 @@ class Authenticator:
         self.metricCutoff = 0.1
         self.testFreqvals = []
         self.testTvals = []
-        self.deviceDB = deviceList()
+        self.deviceDB = db.deviceList()
         self.lockID = 0
         self.npoints = 0
         self.maxfreq = 100000.0
@@ -98,7 +98,7 @@ class Authenticator:
         print("Best match: ", BestDevice)
         print("Norm of ", BestDevice, " and test spectrum = ", str(metric))
         print("With cutoff = ", self.metricCutoff)
-        acceptedKeys = keyList(self.lockID) 
+        acceptedKeys = db.keyList(self.lockID) 
         acceptKey = (BestDevice in acceptedKeys)
         if(metric < self.metricCutoff and acceptKey):
             print("Photonic Quasicrystal accepted!")
