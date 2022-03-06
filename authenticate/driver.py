@@ -1,10 +1,10 @@
-import collections as col
 import PhQ
 from database import db
 import authenticate as auth
+
 #Drive the authentication process through this file
-#function to construct and return authenticator object and database object
 def initialize() :
+    """Initially create and return authenticator and database objects"""
     authenticator = auth.Authenticator()
     dbase = db.database()
     return authenticator, dbase
@@ -13,16 +13,48 @@ def initialize() :
 # dataframe of the tVals and fVals of the spectrum at the location 
 # specified by path parameter
 def getSpectrum(dbase, path) :
+    """Read in list of freqVals and tVals and return as a dataframe
+    
+    Parameters
+    ----------
+    dbase : database Object
+        object that contains the actual connection to the database
+    path : str
+        string of the filepath to the FTIR spectrum
+    """
     spectrum = dbase.readFile(path)
     print("Got spectrum.")
     return spectrum
 
+#function to insert the spectrum values as a PhQ object into the database
+def insertSpectrum(dbase, spectrum) :
+    """Create a PhQ Object with the spectrum values and give that to the database
+    
+    Parameters
+    ----------
+    dbase : database Object
+        object that contains the actual connection to the database
+    spectrum : pandas.dataframe
+        dataframe of the tVals and fVals
+    """
+    key = PhQ("Brazos", 0, spectrum['fVals'], spectrum['tVals'])
+    dbase.insert(key)
+
 #function to check the key for values outside 0 and 1
 def preprocessKey() :
+    """Check the key for values outside 0 and 1"""
     return True
 
 #function to set the values in the authenticator object
 def setVals(spectrum, authenticator) :
+    """Set the values in the authenticator object
+
+    Parameters
+    ----------
+    spectrum : pandas.dataframe
+        dataframe of the tVals and fVals
+    authenticator : Authenticator Object
+    """
     metricCutoff = 0.1
     tVals = spectrum['tVals']
     fVals = spectrum['fVals']
@@ -30,10 +62,15 @@ def setVals(spectrum, authenticator) :
     authenticator.setValues(metricCutoff, fVals, tVals, lockID)
 
 def main() :
+    """Main function of the driver
+    
+    Establishes path to find file of spectrum values,
+    calls earlier defined functions in this file, 
+    contains UI loop.
+    """
     #Begin Verification System:
-    path = "./transmission.txt"
+    path = "./faketransmissions/transmission1.txt"
     complevimus = False
-    key = PhQ("Bobby", 0, [], [])
 
     #Construct authenticator and database objects
     authenticator, dbase = initialize()
@@ -51,7 +88,7 @@ def main() :
             break
         if response == 'A' :
             print("Inserting key to database...")
-            dbase.insert(spectrum)
+            insertSpectrum(dbase, spectrum)
             print("Key inserted into database.")
         elif response == 'B' :
             setVals(spectrum, authenticator)
@@ -59,3 +96,5 @@ def main() :
             if authenticator.authenticate() != False : # returns boolean, utilize this
                 print("Key authenticated!")
         #loop back to top
+
+main()
