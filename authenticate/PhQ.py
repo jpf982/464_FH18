@@ -33,3 +33,6 @@ class PhQ:
 
     def setFreqvals(self, _freqvals):
         self.freqvals = _freqvals
+
+    def getValues(self):
+        return self.name, self.freqvals, self.Tvals

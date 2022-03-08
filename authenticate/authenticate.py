@@ -46,7 +46,7 @@ class Authenticator:
         self.testFreqvals = deepcopy(_testFreqvals)
         self.testTvals = deepcopy(_testTvals)
         if(_deviceDB == None):
-            _deviceDB == db.deviceList()
+            _deviceDB == dbase.deviceList()
         self.deviceDB = _deviceDB # do not want a copy of the whole database! very silly. only ptrs
         self.lockID = _lockID
         # establish some facts about the test data
@@ -56,14 +56,15 @@ class Authenticator:
 
     #default constructor with no parameters
     def __init__(self):
+        """Default constructor of Authenticator object"""
         self.metricCutoff = 0.1
         self.testFreqvals = []
         self.testTvals = []
-        self.deviceDB = db.deviceList()
+        self.deviceDB = None
         self.lockID = 0
         self.npoints = 0
         self.maxfreq = 100000.0
-        self.minfreq = 0.000001
+        self.minfreq = 0.0
     
     # Prime the authenticator, calculate matches
     # call with accuracy = 0 for full L^2 norm.
@@ -112,6 +113,19 @@ class Authenticator:
 
     #sets object attributes based on parameters
     def setValues(self, _metricCutoff, _testFreqvals, _testTvals, _lockID):
+        """Sets object attributes based on parameters
+        
+        Parameters
+        ----------
+        _metricCutoff : float
+            new metricCutoff value
+        _testFreqvals : list[float]
+            new list of frequency values
+        _testTvals : list[float]
+            new list of t values
+        _lockID : float
+            new lockID value
+        """
         self.metricCutoff = _metricCutoff
         self.testFreqvals = deepcopy(_testFreqvals)
         self.testTvals = deepcopy(_testTvals)
