@@ -34,11 +34,10 @@ class database:
 
 
 
-
-
-
-
         # insert name to name.db
+        name.to_sql('db_name', self.spec_conn, if_exists='append', index=False)
+
+        
 
         return 0
 
