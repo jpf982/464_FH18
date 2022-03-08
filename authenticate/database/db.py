@@ -1,20 +1,32 @@
 import sqlite3
 import pandas as pd
-
-
-
-
-
+import PhQ 
 
 class database:
     def __init__(self):
         self.conn = sqlite3.connect(r'./database.db')
 
     def readFile(self, path):
-        df = pd.read_csv(path, sep=':', engine='python')
+        #df = pd.read_csv(path, sep='\t', engine='python')
+        tVals = []
+        fVals = []
+        with open(path) as f :
+            lines = f.readlines()
+            for line in lines :
+                line = line.replace('\n', '')
+                values = line.split('	')
+                tVals.append(values[0])
+                fVals.append(values[1])
+        df = pd.DataFrame({'tVals': tVals, 'fVals': fVals})
+        f.close
         return df
         
-    def insert(self, spectrum):
+    def insert(self, key):
+        name, freqVals, tVals = key.getValues()
+        #store name in name database---
+        
+        #---|
+        spectrum = pd.DataFrame({'FreqVals': freqVals, 'TVals': tVals})
         spectrum.to_sql('trm', self.conn, if_exists='append', index=False)
         return 0
             

@@ -1,4 +1,4 @@
-import PhQ
+import PhQ as phq
 from database import db
 import authenticate as auth
 
@@ -37,7 +37,8 @@ def insertSpectrum(dbase, spectrum) :
     spectrum : pandas.dataframe
         dataframe of the tVals and fVals
     """
-    key = PhQ("Brazos", 0, spectrum['fVals'], spectrum['tVals'])
+    #print(spectrum.head(5))
+    key = phq.PhQ("Brazos", 0, spectrum['fVals'], spectrum['tVals'])
     dbase.insert(key)
 
 #function to check the key for values outside 0 and 1
@@ -69,7 +70,7 @@ def main() :
     contains UI loop.
     """
     #Begin Verification System:
-    path = "./faketransmissions/transmission1.txt"
+    path = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18-1\\authenticate\\faketransmissions\\transmission1.txt"
     complevimus = False
 
     #Construct authenticator and database objects
