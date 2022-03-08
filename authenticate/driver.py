@@ -99,6 +99,7 @@ def main() :
         #loop back to top
 
 def test() :
+    """Test function of driver loop"""
     path = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18-1\\authenticate\\faketransmissions\\transmission1.txt"
     complevimus = False
 
