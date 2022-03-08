@@ -5,6 +5,7 @@ import PhQ as phq
 
 class database:
     def __init__(self):
+        """default constructor of database object"""
         self.spec_conn = sqlite3.connect(r'./database.db')
         self.name_conn = sqlite3.connect(r'./name.db')
 
