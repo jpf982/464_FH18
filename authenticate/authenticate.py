@@ -87,7 +87,7 @@ class Authenticator:
 
     # Finish the authentication
     # Return PhQ ID if successful, false if rejected
-    def authenticate(self):
+    def authenticate(self, dbase):
         try: 
             BestDevice = self.DevicesAndScores[0].DeviceID
         except NameError: 
@@ -99,7 +99,7 @@ class Authenticator:
         print("Best match: ", BestDevice)
         print("Norm of ", BestDevice, " and test spectrum = ", str(metric))
         print("With cutoff = ", self.metricCutoff)
-        acceptedKeys = db.keyList(self.lockID) 
+        acceptedKeys = dbase.keyList(self.lockID) 
         acceptKey = (BestDevice in acceptedKeys)
         if(metric < self.metricCutoff and acceptKey):
             print("Photonic Quasicrystal accepted!")
