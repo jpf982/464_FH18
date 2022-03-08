@@ -4,7 +4,8 @@ import PhQ
 
 class database:
     def __init__(self):
-        self.conn = sqlite3.connect(r'./database.db')
+        self.spec_conn = sqlite3.connect(r'./database.db')
+        self.name_conn = sqlite3.connect(r'./name.db')
 
     def readFile(self, path):
         #df = pd.read_csv(path, sep='\t', engine='python')
@@ -28,6 +29,9 @@ class database:
         #---|
         spectrum = pd.DataFrame({'FreqVals': freqVals, 'TVals': tVals})
         spectrum.to_sql('trm', self.conn, if_exists='append', index=False)
+        
+        #insert name to name.db
+        
         return 0
             
     def remove(self):
@@ -40,7 +44,8 @@ class database:
         return 0
 
     def exitDB(self):
-        self.conn.close()
+        self.spec_conn.close()
+        self.name_conn.close()
 
 
 # Load data into Pandas DataFrame
