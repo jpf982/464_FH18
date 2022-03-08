@@ -129,5 +129,5 @@ def test() :
                 print("Key authenticated!")
         #loop back to top
 
-#main()
-test()
+main()
+#test()
