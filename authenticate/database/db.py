@@ -30,10 +30,13 @@ class database:
 
         # ---|
         spectrum = pd.DataFrame({'FreqVals': freqVals, 'TVals': tVals})
-
         spectrum.to_sql('db_spec', self.spec_conn, if_exists='append', index=False)
 
+
         # insert name to name.db
+        name.to_sql('db_name', self.spec_conn, if_exists='append', index=False)
+
+        
 
         return 0
 
