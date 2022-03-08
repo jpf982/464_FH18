@@ -33,7 +33,6 @@ class database:
         spectrum.to_sql('db_spec', self.spec_conn, if_exists='append', index=False)
 
 
-
         # insert name to name.db
         name.to_sql('db_name', self.spec_conn, if_exists='append', index=False)
 
@@ -45,7 +44,11 @@ class database:
         return 0
 
     def deviceList(self):
-        return "Guadlupe"
+        """Return the list of devices
+        
+        Only Device is raspberry pi 4 board called 'Guadalupe'
+        """
+        return "Guadalupe"
 
     def keyList(self):
         nameDF = pd.read_sql_query("SELECT * FROM db_name", self.name_conn)

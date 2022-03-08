@@ -98,4 +98,36 @@ def main() :
                 print("Key authenticated!")
         #loop back to top
 
+def test() :
+    """Test function of driver loop"""
+    path = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18-1\\authenticate\\faketransmissions\\transmission1.txt"
+    complevimus = False
+
+    #Construct authenticator and database objects
+    authenticator, dbase = initialize()
+
+    while complevimus == False :
+        response = input("Authorize(\'A\') or Authenticate(\'B\')")
+        keyID = input("Provide keyID: ")
+        print("Getting spectrum...")
+        spectrum = getSpectrum(dbase, path)
+        print("Preprocessing key...")
+        if preprocessKey() :
+            print("Key preprocessed.")
+        else :
+            print("Key values detected outside acceptable range.")
+            break
+        if response == 'A' :
+            print("Inserting key to database...")
+            insertSpectrum(dbase, spectrum)
+            print("Key inserted into database.")
+
+        elif response == 'B' :
+            setVals(spectrum, authenticator)
+            authenticator.calculateMetrics(0) # 0 is arbitrary, make param a variable
+            if authenticator.authenticate() != False : # returns boolean, utilize this
+                print("Key authenticated!")
+        #loop back to top
+
 main()
+#test()
