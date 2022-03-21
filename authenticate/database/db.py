@@ -35,6 +35,7 @@ class database:
 
         spectrum.to_sql('db_spec', self.spec_conn, if_exists='append', index=False)
 
+
         # insert name to name.db
         nameDF.to_sql('db_name', self.name_conn, if_exists='append', index=False)
 
