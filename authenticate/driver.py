@@ -47,7 +47,7 @@ def preprocessKey() :
     return True
 
 #function to set the values in the authenticator object
-def setVals(spectrum, authenticator) :
+def setVals(spectrum, authenticator, dbase) :
     """Set the values in the authenticator object
 
     Parameters
@@ -57,10 +57,14 @@ def setVals(spectrum, authenticator) :
     authenticator : Authenticator Object
     """
     metricCutoff = 0.1
-    tVals = spectrum['tVals']
-    fVals = spectrum['fVals']
+    tVals = spectrum['tVals'].to_numpy()
+    fVals = spectrum['fVals'].to_numpy()
     lockID = 1
-    authenticator.setValues(metricCutoff, fVals, tVals, lockID)
+    authenticator.setValues(metricCutoff, fVals, tVals, lockID, dbase)
+
+def getPhQ(dbase) :
+    keyList = dbase.keyList()
+    return keyList
 
 def main() :
     """Main function of the driver
@@ -107,8 +111,8 @@ def test() :
     authenticator, dbase = initialize()
 
     while complevimus == False :
-        response = input("Authorize(\'A\') or Authenticate(\'B\')")
-        keyID = input("Provide keyID: ")
+        response = input("Authorize(\'A\') or Authenticate(\'B\'): ")
+        keyID = input("Provide keyID: ") #move inside response A if statement
         print("Getting spectrum...")
         spectrum = getSpectrum(dbase, path)
         print("Preprocessing key...")
@@ -123,11 +127,15 @@ def test() :
             print("Key inserted into database.")
 
         elif response == 'B' :
-            setVals(spectrum, authenticator)
+            setVals(spectrum, authenticator, dbase)
+            keys = getPhQ(dbase)
+            print("List of keys returned.")
             authenticator.calculateMetrics(0) # 0 is arbitrary, make param a variable
             if authenticator.authenticate() != False : # returns boolean, utilize this
                 print("Key authenticated!")
+            else :
+                print("Key not authenticated!")
         #loop back to top
 
-main()
-#test()
+#main()
+test()

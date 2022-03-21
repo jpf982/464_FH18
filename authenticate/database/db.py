@@ -1,5 +1,6 @@
 import sqlite3
 import pandas as pd
+import numpy as np
 import PhQ as phq
 
 
@@ -30,13 +31,13 @@ class database:
 
         # ---|
         spectrum = pd.DataFrame({'FreqVals': freqVals, 'TVals': tVals})
+        nameDF = pd.DataFrame({'Names': [name]})
+
         spectrum.to_sql('db_spec', self.spec_conn, if_exists='append', index=False)
 
 
         # insert name to name.db
-        name.to_sql('db_name', self.spec_conn, if_exists='append', index=False)
-
-        
+        nameDF.to_sql('db_name', self.name_conn, if_exists='append', index=False)
 
         return 0
 
@@ -48,34 +49,38 @@ class database:
         
         Only Device is raspberry pi 4 board called 'Guadalupe'
         """
-        return "Guadalupe"
+        deviceList = ['Guadalupe']
+        return deviceList
 
     def keyList(self):
         nameDF = pd.read_sql_query("SELECT * FROM db_name", self.name_conn)
-        specDF = pd.read_sql_query("SELECT * FROM db_spectra", self.spec_conn)
+        specDF = pd.read_sql_query("SELECT * FROM db_spec", self.spec_conn)
+        nameList = []
+        specList = []
+        freqVals = []
+        tVals = []
         PhQ_list = []
-        for name, freqVals, tVals in nameDF, specDF:
-            key = phq.PhQ(name, freqVals, tVals)
+
+        for i in range(len(nameDF['Names'])) :
+            nameList.append(nameDF['Names'][i])
+
+        i = 1
+        j = 0
+        while i <= int(len(specDF['TVals'])/5000) :
+            while j < i*5000 :
+                freqVals.append(float(specDF['FreqVals'][j]))
+                tVals.append(float(specDF['TVals'][j]))
+                j = j+1
+            specList.append(freqVals)
+            specList.append(tVals)
+            i = i+1
+
+        for i in range(len(nameList)) :
+            key = phq.PhQ(nameList[i], np.asarray(specList[i]), np.asarray(specList[i+1]))
             PhQ_list.append(key)
+
         return PhQ_list
 
     def exitDB(self):
         self.spec_conn.close()
         self.name_conn.close()
-
-
-# Load data into Pandas DataFrame
-#spectra = pd.read_csv('E190909A 2p0P 0p7W 146 Pol.0.dpt', delimiter=r'\s+', header=None)
-def insert():
-    # Connect to SQLite database
-    conn = sqlite3.connect(r'/home/pi/SeniorDesign/464_FH18/database.db')
-    #conn = sqlite3.connect(r'./database.db')
-
-    # Write the data to a sqlite table
-    key.name.to_sql('db_name', conn, if_exists='append', index=False)
-    spectra = [key.freqvals, key.Tvals]
-    spectra.to_sql('db_spectra', conn, if_exists='append', index=False)
-
-
-# Close connection to SQLite database
-con.close()
