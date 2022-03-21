@@ -41,7 +41,7 @@ class Authenticator:
     # array of T vals from FTIR
     # list of devices in DB
     # ID of the lock that the authenticator is running on ( make it anything atm "Kilimanjaro")
-    def __init__(self, _metricCutoff, _testFreqvals, _testTvals, _lockID, _deviceDB=None):
+    def __init__(self, _metricCutoff, _testFreqvals, _testTvals, _lockID, dbase, _deviceDB=None):
         self.metricCutoff = _metricCutoff
         self.testFreqvals = deepcopy(_testFreqvals)
         self.testTvals = deepcopy(_testTvals)
@@ -50,7 +50,7 @@ class Authenticator:
         self.deviceDB = _deviceDB # do not want a copy of the whole database! very silly. only ptrs
         self.lockID = _lockID
         # establish some facts about the test data
-        self.npoints = _testFreqvals.size
+        self.npoints = np.size(_testFreqvals)
         self.maxfreq = np.amax(_testFreqvals)
         self.minfreq = np.amin(_testFreqvals)
 
@@ -73,7 +73,7 @@ class Authenticator:
         DeviceScore = col.namedtuple('DeviceScore', 'DeviceID score') #Line from above. Does it belong here?
         deviceScores = []
         print("Testing spectra with accuracy ", str(accuracy), " points. \n If npoints == 0, using full spectrum")
-        print("Number of devices to test = ", str(len(self.deviceDB)))
+        print("Number of devices to test = ", len(self.deviceDB))
         for device in self.deviceDB: # loop over the devices and test them
             if(device.npoints != self.npoints or device.maxf != self.maxfreq or device.minf != self.minfreq):
                 raise Exception("The test spectrum and device spectra are not on identical frequency grids. Fix this!")
@@ -112,7 +112,7 @@ class Authenticator:
             return False
 
     #sets object attributes based on parameters
-    def setValues(self, _metricCutoff, _testFreqvals, _testTvals, _lockID):
+    def setValues(self, _metricCutoff, _testFreqvals, _testTvals, _lockID, _dbase):
         """Sets object attributes based on parameters
         
         Parameters
@@ -125,11 +125,14 @@ class Authenticator:
             new list of t values
         _lockID : float
             new lockID value
+        _dbase : database Object
+            object that contains connection to the database
         """
         self.metricCutoff = _metricCutoff
         self.testFreqvals = deepcopy(_testFreqvals)
         self.testTvals = deepcopy(_testTvals)
+        self.deviceDB = _dbase.deviceList()
         self.lockID = _lockID
-        self.npoints = _testFreqvals.size()
+        self.npoints = np.size(_testFreqvals)
         self.maxfreq = np.amax(_testFreqvals)
         self.minfreq = np.amin(_testFreqvals)
