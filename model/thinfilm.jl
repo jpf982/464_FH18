@@ -73,12 +73,12 @@ function getTransmission(layers, ω_begin, ω_end, nω, path, name, avg=0)
 	if(avg > 0) 
 		avgTvals = movingaverage(Tvals, avg) 
 		PrintTransmission(Tvals,ωvals,path,"smooth")
-		fig = plot1D(ωvals,avgTvals,0,1,"ω (THz)","Transmission (smooth)")
+		fig = plot1D(ωvals*ħ/q*THz,avgTvals,0,1,"E (eV)","Transmission (smooth)")
 		SaveFigure(fig,path,"smooth_spectrum")
 	end
 	PrintStack(layers,path,name)
 	PrintTransmission(Tvals,ωvals,path)
-	fig = plot1D(ωvals,Tvals,0,1,"ω (THz)","Transmission")
+	fig = plot1D(ωvals*ħ/q*THz,Tvals,0,1,"E (eV)","Transmission")
 	SaveFigure(fig,path,"spectrum")
 	return Tvals
 end
@@ -130,8 +130,12 @@ chip = vcat(Air,PhC₁,PhC₂,Substrate,Air)
 =#
 
 function main(stack,path,name,nω,smoothing,θ_begin=0, θ_end=0, nθ=1)
-	ω_begin = 0*THz
-	ω_end = 6500*THz
+	E_begin = 0.000001*eV
+	E_end = 1.5*eV
+	ω_begin = E_begin/(ħ/q)
+	ω_end = E_end/(ħ/q)
+	#ω_begin = 0*THz
+	#ω_end = 6500*THz
 	if(θ_end > 0 && nθ > 1)
 		return getTransmissionVsAngle(stack, ω_begin, ω_end, nω, θ_begin, θ_end, nθ, path, name, smoothing)
 	else
