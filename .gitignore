@@ -1,5 +1,7 @@
 __pycache__
 ./__pycache__/
 ./authenticate/__pycache__/
+./authenticate/database.db
+./authenticate/name.db
 
 
