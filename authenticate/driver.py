@@ -1,6 +1,7 @@
 import PhQ as phq
 from database import db
 import authenticate as auth
+import os
 
 #Drive the authentication process through this file
 def initialize() :
@@ -107,16 +108,25 @@ def getPhQ(dbase) :
 
 def main() :
     """Test function of driver loop"""
-    path = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18\\authenticate\\faketransmissions\\transmission1.txt"
+    #path = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18\\authenticate\\faketransmissions\\transmission1.txt"
     #path = "/home/pi/464_FH18/authenticate/faketransmissions/transmission1.txt"
+    toppath = "./faketransmissions/"
     complevimus = False
 
     #Construct authenticator and database objects
     authenticator, dbase = initialize()
 
     while complevimus == False :
+        print("==================================================================")
+        print(" UT Austin Senior Design 2022 Photonic Quasicrystal Authenticator")
+        print("==================================================================\n")
+
         response = input("Authorize(\'A\') or Authenticate(\'B\'): ")
-        keyName = input("Provide keyID: ") #move inside response A if statement
+        print("Consider spectrum path = " + toppath + "X.txt")
+        print("List of keys in path:")
+        print(os.popen("ls " + str(toppath)).read())
+        keyName = input("Provide X, the keyID: ") #move inside response A if statement
+        path = toppath + keyName + ".txt"
         print("Getting spectrum...")
         spectrum = getSpectrum(dbase, path)
         print("Preprocessing key...")
@@ -128,8 +138,11 @@ def main() :
         if response == 'A' :
             print("Inserting key to database...")
             insertSpectrum(dbase, spectrum, keyName)
-            print("Key inserted into database.")
-
+            inserted = True # make insertSpectrum return this value. Check for duplicates!!!! 
+            if(inserted):
+                print("Key successfully inserted into database!\n")
+            else:
+                print("Something went wrong, attempt authentication again\n")
         elif response == 'B' :
             setVals(spectrum, authenticator, dbase)
             keys = getPhQ(dbase)
