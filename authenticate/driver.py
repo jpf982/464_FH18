@@ -38,7 +38,7 @@ def insertSpectrum(dbase, spectrum) :
         dataframe of the tVals and fVals
     """
     #print(spectrum.head(5))
-    key = phq.PhQ("Brazos", 0, spectrum['fVals'], spectrum['tVals'])
+    key = phq.PhQ("Brazos", spectrum['fVals'], spectrum['tVals'])
     dbase.insert(key)
 
 #function to check the key for values outside 0 and 1
@@ -130,7 +130,12 @@ def test() :
             setVals(spectrum, authenticator, dbase)
             keys = getPhQ(dbase)
             print("List of keys returned.")
-            authenticator.calculateMetrics(0) # 0 is arbitrary, make param a variable
+            for key in keys :
+                name, freqVals, tVals = key.getValues()
+                print("key name is : ", name)
+                print("freqVals are : ", freqVals, "\n")
+                print("tVals are : ", tVals)
+            authenticator.calculateMetrics(0, keys) # 0 is arbitrary, make param a variable
             if authenticator.authenticate() != False : # returns boolean, utilize this
                 print("Key authenticated!")
             else :

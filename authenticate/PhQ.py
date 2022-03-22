@@ -36,3 +36,18 @@ class PhQ:
 
     def getValues(self):
         return self.name, self.freqvals, self.Tvals
+
+    def getPoints(self):
+        return self.npoints
+
+    def getMaxF(self):
+        return self.maxf
+
+    def getMinF(self):
+        return self.minf
+
+    def getTvals(self):
+        return self.Tvals
+
+    def getID(self):
+        return self.identity
