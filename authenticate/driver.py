@@ -66,7 +66,8 @@ def getPhQ(dbase) :
     keyList = dbase.keyList()
     return keyList
 
-def main() :
+# commented out old main; may still be of some utility
+'''def main() :
     """Main function of the driver
     
     Establishes path to find file of spectrum values,
@@ -101,8 +102,10 @@ def main() :
             if authenticator.authenticate() != False : # returns boolean, utilize this
                 print("Key authenticated!")
         #loop back to top
+'''
 
-def test() :
+
+def main() :
     """Test function of driver loop"""
     path = "./faketransmissions/transmission1.txt"
     #path = "/home/pi/464_FH18/authenticate/faketransmissions/transmission1.txt"
@@ -143,5 +146,4 @@ def test() :
                 print("Key not authenticated!")
         #loop back to top
 
-#main()
-test()
+main()
