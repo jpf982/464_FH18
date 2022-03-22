@@ -27,7 +27,7 @@ def getSpectrum(dbase, path) :
     return spectrum
 
 #function to insert the spectrum values as a PhQ object into the database
-def insertSpectrum(dbase, spectrum) :
+def insertSpectrum(dbase, spectrum, keyName) :
     """Create a PhQ Object with the spectrum values and give that to the database
     
     Parameters
@@ -38,7 +38,7 @@ def insertSpectrum(dbase, spectrum) :
         dataframe of the tVals and fVals
     """
     #print(spectrum.head(5))
-    key = phq.PhQ("Brazos", spectrum['fVals'], spectrum['tVals'])
+    key = phq.PhQ(keyName, spectrum['fVals'], spectrum['tVals'])
     dbase.insert(key)
 
 #function to check the key for values outside 0 and 1
@@ -104,7 +104,7 @@ def main() :
 
 def test() :
     """Test function of driver loop"""
-    path = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18-1\\authenticate\\faketransmissions\\transmission1.txt"
+    path = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18\\authenticate\\faketransmissions\\transmission1.txt"
     #path = "/home/pi/464_FH18/authenticate/faketransmissions/transmission1.txt"
     complevimus = False
 
@@ -113,7 +113,7 @@ def test() :
 
     while complevimus == False :
         response = input("Authorize(\'A\') or Authenticate(\'B\'): ")
-        keyID = input("Provide keyID: ") #move inside response A if statement
+        keyName = input("Provide keyID: ") #move inside response A if statement
         print("Getting spectrum...")
         spectrum = getSpectrum(dbase, path)
         print("Preprocessing key...")
@@ -124,7 +124,7 @@ def test() :
             break
         if response == 'A' :
             print("Inserting key to database...")
-            insertSpectrum(dbase, spectrum)
+            insertSpectrum(dbase, spectrum, keyName)
             print("Key inserted into database.")
 
         elif response == 'B' :
