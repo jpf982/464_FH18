@@ -70,7 +70,8 @@ class Authenticator:
     # call with accuracy = 0 for full L^2 norm.
     # else call with n random points to estimate integral.
     def calculateMetrics(self, accuracy, keyList): # accuracy = how many sample points in spectra. 0 = ALL
-        DeviceScore = col.namedtuple('DeviceID score', 'DeviceScore') #Line from above. Does it belong here?
+        #DeviceScore = col.namedtuple('DeviceID_score', 'DeviceScore') #Line from above. Does it belong here?
+        DeviceScore = col.namedtuple('DeviceScore', ['DeviceID', 'score']) #Line from above. Does it belong here?
         deviceScores = []
         print("Testing spectra with accuracy ", str(accuracy), " points. \n If npoints == 0, using full spectrum")
         print("Number of devices to test = ", len(self.deviceDB))
