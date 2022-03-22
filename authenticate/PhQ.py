@@ -19,12 +19,12 @@ from copy import *
 # name = anything
 # ID = some hash function of the name
 class PhQ:
-    def __init__(self, _name, _identity, _freqvals, _Tvals):
+    def __init__(self, _name, _freqvals, _Tvals):
         self.name = _name
-        self.identity = _identity
+        self.identity = hash(_name)
         self.Tvals = deepcopy(_Tvals) #deepcopies for security reasons.
         self.freqvals = deepcopy(_freqvals)
-        self.npoints = _freqvals.size
+        self.npoints = np.size(_freqvals)
         self.maxf = np.amax(_freqvals)
         self.minf = np.amin(_freqvals)
 
@@ -36,3 +36,18 @@ class PhQ:
 
     def getValues(self):
         return self.name, self.freqvals, self.Tvals
+
+    def getPoints(self):
+        return self.npoints
+
+    def getMaxF(self):
+        return self.maxf
+
+    def getMinF(self):
+        return self.minf
+
+    def getTvals(self):
+        return self.Tvals
+
+    def getID(self):
+        return self.identity
