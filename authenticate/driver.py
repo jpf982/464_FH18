@@ -137,7 +137,7 @@ def test() :
                 print("freqVals are : ", freqVals, "\n")
                 print("tVals are : ", tVals)
             authenticator.calculateMetrics(0, keys) # 0 is arbitrary, make param a variable
-            if authenticator.authenticate() != False : # returns boolean, utilize this
+            if authenticator.authenticate(dbase) != False : # returns boolean, utilize this
                 print("Key authenticated!")
             else :
                 print("Key not authenticated!")

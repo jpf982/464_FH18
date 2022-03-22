@@ -19,8 +19,8 @@ class database:
             for line in lines:
                 line = line.replace('\n', '')
                 values = line.split('	')
-                tVals.append(values[0])
-                fVals.append(values[1])
+                tVals.append(float(values[0]))
+                fVals.append(float(values[1]))
         df = pd.DataFrame({'tVals': tVals, 'fVals': fVals})
         f.close
         return df
