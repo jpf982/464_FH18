@@ -31,11 +31,11 @@ class database:
 
         # ---|
         spectrum = pd.DataFrame({'FreqVals': freqVals, 'TVals': tVals})
+        spectrum.loc[len(spectrum.index)] = [-1.0, -1.0]
+        print(spectrum)
         nameDF = pd.DataFrame({'Names': [name]})
 
         spectrum.to_sql('db_spec', self.spec_conn, if_exists='append', index=False)
-
-
         # insert name to name.db
         nameDF.to_sql('db_name', self.name_conn, if_exists='append', index=False)
 
@@ -54,7 +54,8 @@ class database:
 
     def keyList(self):
         nameDF = pd.read_sql_query("SELECT * FROM db_name", self.name_conn)
-        specDF = pd.read_sql_query("SELECT * FROM db_spec", self.spec_conn)
+        #specDF = pd.read_sql_query("SELECT * FROM db_spec", self.spec_conn)
+        specDF = self.spec_conn.execute("SELECT * FROM db_spec")
         nameList = []
         specList = []
         freqVals = []
@@ -64,16 +65,15 @@ class database:
         for i in range(len(nameDF['Names'])) :
             nameList.append(nameDF['Names'][i])
 
-        i = 1
-        j = 0
-        while i <= int(len(specDF['TVals'])/5000) :
-            while j < i*5000 :
-                freqVals.append(float(specDF['FreqVals'][j]))
-                tVals.append(float(specDF['TVals'][j]))
-                j = j+1
-            specList.append(freqVals)
-            specList.append(tVals)
-            i = i+1
+        for row in specDF:
+            if row[0] != -1.0 :
+                tVals.append(row[1])
+                freqVals.append(row[0])
+            else :
+                specList.append(freqVals)
+                specList.append(tVals)
+                freqVals = []
+                tVals = []
 
         for i in range(len(nameList)) :
             key = phq.PhQ(nameList[i], np.asarray(specList[i*2]), np.asarray(specList[(i*2)+1]))
