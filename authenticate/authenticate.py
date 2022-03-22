@@ -69,16 +69,16 @@ class Authenticator:
     # Prime the authenticator, calculate matches
     # call with accuracy = 0 for full L^2 norm.
     # else call with n random points to estimate integral.
-    def calculateMetrics(self, accuracy): # accuracy = how many sample points in spectra. 0 = ALL
-        DeviceScore = col.namedtuple('DeviceScore', 'DeviceID score') #Line from above. Does it belong here?
+    def calculateMetrics(self, accuracy, keyList): # accuracy = how many sample points in spectra. 0 = ALL
+        DeviceScore = col.namedtuple('DeviceID score', 'DeviceScore') #Line from above. Does it belong here?
         deviceScores = []
         print("Testing spectra with accuracy ", str(accuracy), " points. \n If npoints == 0, using full spectrum")
         print("Number of devices to test = ", len(self.deviceDB))
-        for device in self.deviceDB: # loop over the devices and test them
-            if(device.npoints != self.npoints or device.maxf != self.maxfreq or device.minf != self.minfreq):
-                raise Exception("The test spectrum and device spectra are not on identical frequency grids. Fix this!")
-            metric = L2norm(accuracy,self.testTvals,device.Tvals) # perform test
-            deviceScore = DeviceScore(deepcopy(device.identity),metric) # make a named tuple, sort of like C struct
+        for key in keyList: # loop over the devices and test them
+    #        if(key.getPoints() != self.npoints or key.getMaxF() != self.maxfreq or key.getMinF() != self.minfreq):
+    #           raise Exception("The test spectrum and device spectra are not on identical frequency grids. Fix this!")
+            metric = L2norm(accuracy,self.testTvals,key.getTvals()) # perform test
+            deviceScore = DeviceScore(deepcopy(key.getID()),metric) # make a named tuple, sort of like C struct
             deviceScores.append(deviceScore)
         self.DevicesAndScores = sorted(deviceScores, key=lambda x: x.score) # sort based on metric
         print("Authenticator is primed.")

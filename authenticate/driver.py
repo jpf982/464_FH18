@@ -132,14 +132,14 @@ def test() :
             print("List of keys returned.")
             for key in keys :
                 name, freqVals, tVals = key.getValues()
-                print("Key name is : ", name)
+                print("key name is : ", name)
                 print("freqVals are : ", freqVals, "\n")
                 print("tVals are : ", tVals)
-            #authenticator.calculateMetrics(0) # 0 is arbitrary, make param a variable
-            #if authenticator.authenticate() != False : # returns boolean, utilize this
-                #print("Key authenticated!")
-            #else :
-                #print("Key not authenticated!")
+            authenticator.calculateMetrics(0, keys) # 0 is arbitrary, make param a variable
+            if authenticator.authenticate() != False : # returns boolean, utilize this
+                print("Key authenticated!")
+            else :
+                print("Key not authenticated!")
         #loop back to top
 
 #main()
