@@ -20,13 +20,13 @@ function mkfolder(path)
 end
 	
 Air  = 		Layer("Air",     	1, 1, 0.5*10^6*nm,		0);
-Substrate=	Layer("Glass",  	5, 1,10^6*nm,    	0);
+Substrate=	Layer("Substrate",  	5, 1,10^6*nm,    	0);
 
 function genGaussianRandomStack(n) # this is arbitrary and ugly for now, do  not worry
 	#param of layer:name, εᵣ  μᵣ  Δx (nm), σ (S/m)
 	PhQ = []
-	dx1 = Normal(40,2)
-	dx2 = Normal(200,10)
+	dx1 = Normal(30,8)
+	dx2 = Normal(150,70)
 	for i = 1:n
 		#dx1 = 80*rand(); dx2 = 400*rand();
 		Si 	=     	Layer("Si",	  11.9, 1, rand(dx1)*nm, 10^(-3));
@@ -169,7 +169,7 @@ function RandomChips(n,nChips,nω,smoothing)
 end
 
 
-nω = 4000; smoothing = 15; nChips = 5; n = 3
+nω = 6000; smoothing = 60; nChips = 5; n = 15 # number of [Si/SiO₂] layers
 θ₁ = 0; θ₂ = 20; 
 nθ = 60; 
 #TwoStageSpectra(15,nω,0.0,0.06,601,smoothing)
