@@ -100,8 +100,10 @@ class Authenticator:
         print("Best match: ", BestDevice)
         print("Norm of ", BestDevice, " and test spectrum = ", str(metric))
         print("With cutoff = ", self.metricCutoff)
-        acceptedKeys = dbase.keyList(self.lockID) 
-        acceptKey = (BestDevice in acceptedKeys)
+        #acceptedKeys = dbase.keyList()
+        #acceptKey = (BestDevice in acceptedKeys)
+        acceptKey = True    #Hardcoding because there is only one "lock", i.e. the RasPi
+        #print(str(acceptKey))
         if(metric < self.metricCutoff and acceptKey):
             print("Photonic Quasicrystal accepted!")
             return BestDevice
