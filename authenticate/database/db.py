@@ -76,7 +76,7 @@ class database:
             i = i+1
 
         for i in range(len(nameList)) :
-            key = phq.PhQ(nameList[i], np.asarray(specList[i]), np.asarray(specList[i+1]))
+            key = phq.PhQ(nameList[i], np.asarray(specList[i*2]), np.asarray(specList[(i*2)+1]))
             PhQ_list.append(key)
 
         return PhQ_list

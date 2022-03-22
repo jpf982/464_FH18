@@ -104,7 +104,7 @@ def main() :
 
 def test() :
     """Test function of driver loop"""
-    path = "./faketransmissions/transmission1.txt"
+    path = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18-1\\authenticate\\faketransmissions\\transmission1.txt"
     #path = "/home/pi/464_FH18/authenticate/faketransmissions/transmission1.txt"
     complevimus = False
 
