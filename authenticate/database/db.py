@@ -20,7 +20,7 @@ class database:
                 line = line.replace('\n', '')
                 values = line.split('	')
                 # be careful about this, check for system
-                if values[0]%2 != 1:
+                if float(values[0])%2 != 1:
                     fVals.append(float(values[0]))
                     tVals.append(float(values[1]))
         df = pd.DataFrame({'tVals': tVals, 'fVals': fVals})
