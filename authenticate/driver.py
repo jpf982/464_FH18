@@ -108,7 +108,7 @@ def getPhQ(dbase) :
 
 def main() :
     """Test function of driver loop"""
-    #path = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18\\authenticate\\faketransmissions\\transmission1.txt"
+    #toppath = "C:\\Users\\jimfo\\SeniorDesign\\FH18\\464_FH18\\authenticate\\faketransmissions\\"
     #path = "/home/pi/464_FH18/authenticate/faketransmissions/transmission1.txt"
     toppath = "./faketransmissions/"
     complevimus = False
