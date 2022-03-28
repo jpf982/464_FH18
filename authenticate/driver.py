@@ -57,7 +57,7 @@ def setVals(spectrum, authenticator, dbase) :
         dataframe of the tVals and fVals
     authenticator : Authenticator Object
     """
-    metricCutoff = 0.1
+    metricCutoff = 0.002
     tVals = spectrum['tVals'].to_numpy()
     fVals = spectrum['fVals'].to_numpy()
     lockID = 1
@@ -110,7 +110,7 @@ def main() :
     """Test function of driver loop"""
     #toppath = "C:\\Users\\jimfo\\SeniorDesign\\FH18\\464_FH18\\authenticate\\faketransmissions\\"
     #path = "/home/pi/464_FH18/authenticate/faketransmissions/transmission1.txt"
-    toppath = "./faketransmissions/"
+    toppath = "../samples_spectra/"
     complevimus = False
 
     #Construct authenticator and database objects
@@ -126,7 +126,7 @@ def main() :
         print("List of keys in path:")
         print(os.popen("ls " + str(toppath)).read())
         keyName = input("Provide X, the keyID: ") #move inside response A if statement
-        path = toppath + keyName + ".txt"
+        path = toppath + keyName + ".csv"
         print("Getting spectrum...")
         spectrum = getSpectrum(dbase, path)
         print("Preprocessing key...")
@@ -149,14 +149,15 @@ def main() :
             print("List of keys returned.")
             for key in keys :
                 name, freqVals, tVals = key.getValues()
-                print("key name is : ", name)
-                print("freqVals are : ", freqVals, "\n")
-                print("tVals are : ", tVals)
+                #print("key name is : ", name)
+                #print("freqVals are : ", freqVals, "\n")
+                #print("tVals are : ", tVals)
             authenticator.calculateMetrics(0, keys) # 0 is arbitrary, make param a variable
             if authenticator.authenticate(dbase) != False : # returns boolean, utilize this
                 print("Key authenticated!")
             else :
                 print("Key not authenticated!")
+            print("\n\n")
         #loop back to top
 
 main()
