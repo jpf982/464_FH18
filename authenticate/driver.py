@@ -108,9 +108,9 @@ def getPhQ(dbase) :
 
 def main() :
     """Test function of driver loop"""
-    #toppath = "C:\\Users\\jimfo\\SeniorDesign\\FH18\\464_FH18\\authenticate\\faketransmissions\\"
+    toppath = "C:\\Users\\jimfo\\SeniorDesign\\FH18\\464_FH18\\authenticate\\faketransmissions\\"
     #path = "/home/pi/464_FH18/authenticate/faketransmissions/transmission1.txt"
-    toppath = "./faketransmissions/"
+    #toppath = "./faketransmissions/"
     complevimus = False
 
     #Construct authenticator and database objects
@@ -130,11 +130,11 @@ def main() :
         print("Getting spectrum...")
         spectrum = getSpectrum(dbase, path)
         print("Preprocessing key...")
+        #try:
         if preprocessKey() :
             print("Key preprocessed.")
-        else :
-            print("Key values detected outside acceptable range.")
-            break
+        #catch :
+        #    print("Key values detected outside acceptable range.")
         if response == 'A' :
             print("Inserting key to database...")
             insertSpectrum(dbase, spectrum, keyName)
@@ -157,6 +157,8 @@ def main() :
                 print("Key authenticated!")
             else :
                 print("Key not authenticated!")
+        elif response == 'Delete' :
+            dbase.remove(keyName)
         #loop back to top
 
 main()

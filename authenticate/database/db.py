@@ -8,12 +8,13 @@ class database:
     def __init__(self):
         """default constructor of database object"""
         self.spec_conn = sqlite3.connect(r'./database.db')
-        self.name_conn = sqlite3.connect(r'./name.db')
+        #self.name_conn = sqlite3.connect(r'./name.db')
 
     def readFile(self, path):
         # df = pd.read_csv(path, sep='\t', engine='python')
         tVals = []
         fVals = []
+        #try:
         with open(path) as f:
             lines = f.readlines()
             for line in lines:
@@ -21,6 +22,7 @@ class database:
                 values = line.split('	')
                 tVals.append(float(values[0]))
                 fVals.append(float(values[1]))
+        #catch
         df = pd.DataFrame({'tVals': tVals, 'fVals': fVals})
         f.close
         return df
@@ -32,40 +34,42 @@ class database:
         # ---|
         spectrum = pd.DataFrame({'FreqVals': freqVals, 'TVals': tVals})
         spectrum.loc[len(spectrum.index)] = [-1.0, -1.0]
+        spectrum.insert(2, 'Name', name)
         print(spectrum)
-        nameDF = pd.DataFrame({'Names': [name]})
+        #nameDF = pd.DataFrame({'Names': [name]})
 
         spectrum.to_sql('db_spec', self.spec_conn, if_exists='append', index=False)
         # insert name to name.db
-        nameDF.to_sql('db_name', self.name_conn, if_exists='append', index=False)
+        #nameDF.to_sql('db_name', self.name_conn, if_exists='append', index=False)
 
-        return 0
-
-    def remove(self):
-        return 0
+    def remove(self, keyName):
+        execution = "DELETE FROM db_spec WHERE Name = \"" + keyName + "\""
+        self.spec_conn.execute(execution)
 
     def deviceList(self):
         """Return the list of devices
         
-        Only Device is raspberry pi 4 board called 'Guadalupe'
+        Only Device is raspberry pi 4 board, arbitrarilty called 'Guadalupe'
         """
         deviceList = ['Guadalupe']
         return deviceList
 
     def keyList(self):
-        nameDF = pd.read_sql_query("SELECT * FROM db_name", self.name_conn)
+        nameDF = pd.read_sql_query("SELECT * FROM db_spec", self.spec_conn)
         #specDF = pd.read_sql_query("SELECT * FROM db_spec", self.spec_conn)
-        specDF = self.spec_conn.execute("SELECT * FROM db_spec")
+        cursor = self.spec_conn.execute("SELECT * FROM db_spec")
         nameList = []
         specList = []
         freqVals = []
         tVals = []
         PhQ_list = []
 
-        for i in range(len(nameDF['Names'])) :
-            nameList.append(nameDF['Names'][i])
+        nameList = nameDF.Name.unique()
+        print(nameList)
+        #for i in range(len(specDF['Name'])) :
+        #    nameList.append(specDF['Name'][i])
 
-        for row in specDF:
+        for row in cursor:
             if row[0] != -1.0 :
                 tVals.append(row[1])
                 freqVals.append(row[0])
@@ -83,4 +87,4 @@ class database:
 
     def exitDB(self):
         self.spec_conn.close()
-        self.name_conn.close()
+        #self.name_conn.close()
