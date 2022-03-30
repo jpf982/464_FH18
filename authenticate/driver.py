@@ -37,10 +37,12 @@ def insertSpectrum(dbase, spectrum, keyName) :
         object that contains the actual connection to the database
     spectrum : pandas.dataframe
         dataframe of the tVals and fVals
+    keyName : str
+        user input name of the key
     """
-    #print(spectrum.head(5))
+    #Check for duplicates!!!! 
     key = phq.PhQ(keyName, spectrum['fVals'], spectrum['tVals'])
-    dbase.insert(key)
+    return dbase.insert(key)
 
 #function to check the key for values outside 0 and 1
 def preprocessKey() :
@@ -56,6 +58,7 @@ def setVals(spectrum, authenticator, dbase) :
     spectrum : pandas.dataframe
         dataframe of the tVals and fVals
     authenticator : Authenticator Object
+    dbase : Database Object
     """
     metricCutoff = 0.1
     tVals = spectrum['tVals'].to_numpy()
@@ -64,50 +67,17 @@ def setVals(spectrum, authenticator, dbase) :
     authenticator.setValues(metricCutoff, fVals, tVals, lockID, dbase)
 
 def getPhQ(dbase) :
+    """Get and return the list of keys stored in the database
+    
+    Parameters
+    ----------
+    dbase : Database Object
+    """
     keyList = dbase.keyList()
     return keyList
 
-# commented out old main; may still be of some utility
-'''def main() :
-    """Main function of the driver
-    
-    Establishes path to find file of spectrum values,
-    calls earlier defined functions in this file, 
-    contains UI loop.
-    """
-    #Begin Verification System:
-    path = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18-1\\authenticate\\faketransmissions\\transmission1.txt"
-    complevimus = False
-
-    #Construct authenticator and database objects
-    authenticator, dbase = initialize()
-
-    while complevimus == False :
-        response = input("Authorize(\'A\') or Authenticate(\'B\')")
-        keyID = input("Provide keyID: ")
-        print("Getting spectrum...")
-        spectrum = getSpectrum(dbase, path)
-        print("Preprocessing key...")
-        if preprocessKey() :
-            print("Key preprocessed.")
-        else :
-            print("Key values detected outside acceptable range.")
-            break
-        if response == 'A' :
-            print("Inserting key to database...")
-            insertSpectrum(dbase, spectrum)
-            print("Key inserted into database.")
-        elif response == 'B' :
-            setVals(spectrum, authenticator)
-            authenticator.calculateMetrics(0) # 0 is arbitrary, make param a variable
-            if authenticator.authenticate() != False : # returns boolean, utilize this
-                print("Key authenticated!")
-        #loop back to top
-'''
-
-
 def main() :
-    """Test function of driver loop"""
+    """Main function of driver loop"""
     toppath = "C:\\Users\\jimfo\\SeniorDesign\\FH18\\464_FH18\\authenticate\\faketransmissions\\"
     #path = "/home/pi/464_FH18/authenticate/faketransmissions/transmission1.txt"
     #toppath = "./faketransmissions/"
@@ -137,12 +107,18 @@ def main() :
         #    print("Key values detected outside acceptable range.")
         if response == 'A' :
             print("Inserting key to database...")
-            insertSpectrum(dbase, spectrum, keyName)
-            inserted = True # make insertSpectrum return this value. Check for duplicates!!!! 
+            inserted = insertSpectrum(dbase, spectrum, keyName)
             if(inserted):
                 print("Key successfully inserted into database!\n")
+                keys = getPhQ(dbase)
+                print("LIST OF KEYS")
+                for key in keys :
+                    name, freqVals, tVals = key.getValues()
+                    print("key name is : ", name)
+                    print("freqVals are : ", freqVals)
+                    print("tVals are : ", tVals)
             else:
-                print("Something went wrong, attempt authentication again\n")
+                print("Failed to insert key to database, try again\n")
         elif response == 'B' :
             setVals(spectrum, authenticator, dbase)
             keys = getPhQ(dbase)
@@ -150,15 +126,18 @@ def main() :
             for key in keys :
                 name, freqVals, tVals = key.getValues()
                 print("key name is : ", name)
-                print("freqVals are : ", freqVals, "\n")
+                print("freqVals are : ", freqVals)
                 print("tVals are : ", tVals)
             authenticator.calculateMetrics(0, keys) # 0 is arbitrary, make param a variable
             if authenticator.authenticate(dbase) != False : # returns boolean, utilize this
                 print("Key authenticated!")
             else :
                 print("Key not authenticated!")
-        elif response == 'Delete' :
+        elif response == 'D' :
             dbase.remove(keyName)
+        elif response == 'E' :
+            dbase.exitDB()
+            complevimus = True
         #loop back to top
 
 main()

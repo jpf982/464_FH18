@@ -28,19 +28,24 @@ class database:
         return df
 
     def insert(self, key):
-        name, freqVals, tVals = key.getValues()
-        # store name in name database---
+        """Insert key variable in to the database
+        
+        Parameters
+        ----------
+        key : Phq Object
+            contains the name string and lists of freqVals and tVals of the key
+        """
+        try:
+            name, freqVals, tVals = key.getValues()
+            spectrum = pd.DataFrame({'FreqVals': freqVals, 'TVals': tVals})
+            spectrum.loc[len(spectrum.index)] = [-1.0, -1.0]
+            spectrum.insert(2, 'Name', name)
+            #print(spectrum)
+            spectrum.to_sql('db_spec', self.spec_conn, if_exists='append', index=False)
+            return True
+        except:
+            return False
 
-        # ---|
-        spectrum = pd.DataFrame({'FreqVals': freqVals, 'TVals': tVals})
-        spectrum.loc[len(spectrum.index)] = [-1.0, -1.0]
-        spectrum.insert(2, 'Name', name)
-        print(spectrum)
-        #nameDF = pd.DataFrame({'Names': [name]})
-
-        spectrum.to_sql('db_spec', self.spec_conn, if_exists='append', index=False)
-        # insert name to name.db
-        #nameDF.to_sql('db_name', self.name_conn, if_exists='append', index=False)
 
     def remove(self, keyName):
         execution = "DELETE FROM db_spec WHERE Name = \"" + keyName + "\""
@@ -65,7 +70,7 @@ class database:
         PhQ_list = []
 
         nameList = nameDF.Name.unique()
-        print(nameList)
+        #print(nameList)
         #for i in range(len(specDF['Name'])) :
         #    nameList.append(specDF['Name'][i])
 
@@ -84,6 +89,10 @@ class database:
             PhQ_list.append(key)
 
         return PhQ_list
+
+    def clearTable(self):
+        cursor = self.spec_conn.cursor()
+        cursor.execute("DELETE FROM db_spec")
 
     def exitDB(self):
         self.spec_conn.close()
