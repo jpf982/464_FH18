@@ -30,22 +30,6 @@ class database:
         return df
 
     def insert(self, key):
-<<<<<<< HEAD
-        name, freqVals, tVals = key.getValues()
-        maxT = maximum(tVals)
-        tVals = (1/maxT)*tVals
-        # store name in name database---
-
-        # ---|
-        spectrum = pd.DataFrame({'FreqVals': freqVals, 'TVals': tVals})
-        spectrum.loc[len(spectrum.index)] = [-1.0, -1.0]
-        print(spectrum)
-        nameDF = pd.DataFrame({'Names': [name]})
-
-        spectrum.to_sql('db_spec', self.spec_conn, if_exists='append', index=False)
-        # insert name to name.db
-        nameDF.to_sql('db_name', self.name_conn, if_exists='append', index=False)
-=======
         """Insert key variable in to the database
         
         Parameters
@@ -55,6 +39,8 @@ class database:
         """
         try:
             name, freqVals, tVals = key.getValues()
+            maxT = maximum(tVals)
+            tVals = (1/maxT)*tVals
             spectrum = pd.DataFrame({'FreqVals': freqVals, 'TVals': tVals})
             spectrum.loc[len(spectrum.index)] = [-1.0, -1.0]
             spectrum.insert(2, 'Name', name)
@@ -63,7 +49,6 @@ class database:
             return True
         except:
             return False
->>>>>>> 77dc1be8676221a5490d35dc526c07ced14ad5f8
 
 
     def remove(self, keyName):
