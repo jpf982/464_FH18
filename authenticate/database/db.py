@@ -20,9 +20,11 @@ class database:
             for line in lines:
                 line = line.replace('\n', '')
                 values = line.split('	')
-                tVals.append(float(values[0]))
-                fVals.append(float(values[1]))
         #catch
+                # be careful about this, check for system
+                if float(values[0])%2 != 1:
+                    fVals.append(float(values[0]))
+                    tVals.append(float(values[1]))
         df = pd.DataFrame({'tVals': tVals, 'fVals': fVals})
         f.close
         return df
