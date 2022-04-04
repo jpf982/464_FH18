@@ -110,13 +110,6 @@ def main() :
             inserted = insertSpectrum(dbase, spectrum, keyName)
             if(inserted):
                 print("Key successfully inserted into database!\n")
-                keys = getPhQ(dbase)
-                print("LIST OF KEYS")
-                for key in keys :
-                    name, freqVals, tVals = key.getValues()
-                    print("key name is : ", name)
-                    print("freqVals are : ", freqVals)
-                    print("tVals are : ", tVals)
             else:
                 print("Failed to insert key to database, try again\n")
         elif response == 'B' :
@@ -133,6 +126,8 @@ def main() :
                 print("Key authenticated!")
             else :
                 print("Key not authenticated!")
+        elif response == 'C':
+            dbase.clearTable()
         elif response == 'D' :
             dbase.remove(keyName)
         elif response == 'E' :
