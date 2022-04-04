@@ -39,6 +39,9 @@ class database:
         """
         try:
             name, freqVals, tVals = key.getValues()
+            # normalize to largest value in transmission spectrum
+            maxT = np.amax(tVals)
+            tVals = (1/maxT)*tVals
             spectrum = pd.DataFrame({'FreqVals': freqVals, 'TVals': tVals})
             spectrum.loc[len(spectrum.index)] = [-1.0, -1.0]
             spectrum.insert(2, 'Name', name)
