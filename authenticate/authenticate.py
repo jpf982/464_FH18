@@ -29,9 +29,9 @@ def L2norm(npoints, Tvals1, Tvals2):
         metric = (1/npoints)*np.sqrt(intsum)
     return metric
 
-def termplot(x,y):
+def termplot(name,x,y):
     fig = tpl.figure()
-    fig.plot(x, y, width=150, height=13)
+    fig.plot(x, y, label=name, width=150, height=15)
     fig.show()
 
 class Authenticator: 
@@ -50,7 +50,9 @@ class Authenticator:
     def __init__(self, _metricCutoff, _testFreqvals, _testTvals, _lockID, dbase, _deviceDB=None):
         self.metricCutoff = _metricCutoff
         self.testFreqvals = deepcopy(_testFreqvals)
-        self.testTvals = deepcopy(_testTvals)
+        
+        maxT = np.amax(_testTvals)
+        self.testTvals = deepcopy((1/maxT)*_testTvals)
         if(_deviceDB == None):
             _deviceDB == dbase.deviceList()
         self.deviceDB = _deviceDB # do not want a copy of the whole database! very silly. only ptrs
@@ -79,14 +81,16 @@ class Authenticator:
         #DeviceScore = col.namedtuple('DeviceID_score', 'DeviceScore') #Line from above. Does it belong here?
         DeviceScore = col.namedtuple('DeviceScore', ['DeviceID', 'score']) #Line from above. Does it belong here?
         deviceScores = []
-        print("Testing spectra with accuracy ", str(accuracy), "% of samples")
-        print("Number of devices to test = ", len(self.deviceDB))
-        termplot(self.testFreqvals,self.testTvals)
+        print("Testing spectra with accuracy ", str(accuracy), "% of samples.")
+        #print("Number of devices to test = ", len(self.deviceDB))
+        
+        print("\n== Spectra of Devices == ")
+        termplot("Test",self.testFreqvals,self.testTvals)
         for key in keyList: # loop over the devices and test them
     #        if(key.getPoints() != self.npoints or key.getMaxF() != self.maxfreq or key.getMinF() != self.minfreq):
     #           raise Exception("The test spectrum and device spectra are not on identical frequency grids. Fix this!")
             metric = L2norm(accuracy,self.testTvals,key.getTvals()) # perform test
-            termplot(self.testFreqvals,key.getTvals())
+            termplot(key.name,self.testFreqvals,key.getTvals())
             deviceScore = DeviceScore(deepcopy(key.getID()),metric) # make a named tuple, sort of like C struct
             deviceScores.append(deviceScore)
         self.DevicesAndScores = sorted(deviceScores, key=lambda x: x.score) # sort based on metric
@@ -142,7 +146,8 @@ class Authenticator:
         """
         self.metricCutoff = _metricCutoff
         self.testFreqvals = deepcopy(_testFreqvals)
-        self.testTvals = deepcopy(_testTvals)
+        maxT = np.amax(_testTvals)
+        self.testTvals = deepcopy((1/maxT)*_testTvals)
         self.deviceDB = _dbase.deviceList()
         self.lockID = _lockID
         self.npoints = np.size(_testFreqvals)
