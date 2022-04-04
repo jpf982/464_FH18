@@ -129,35 +129,24 @@ def main() :
             print("List of keys returned.")
             for key in keys :
                 name, freqVals, tVals = key.getValues()
-<<<<<<< HEAD
-                #print("key name is : ", name)
-                #print("freqVals are : ", freqVals, "\n")
-                #print("tVals are : ", tVals)
             authenticator.calculateMetrics(100, keys) # 0 is arbitrary, make param a variable
-=======
-                print("key name is : ", name)
-                print("freqVals are : ", freqVals)
-                print("tVals are : ", tVals)
-            authenticator.calculateMetrics(0, keys) # 0 is arbitrary, make param a variable
->>>>>>> 77dc1be8676221a5490d35dc526c07ced14ad5f8
+            #print("key name is : ", name)
+            #print("freqVals are : ", freqVals)
+            #print("tVals are : ", tVals)
             if authenticator.authenticate(dbase) != False : # returns boolean, utilize this
                 print("Key authenticated!")
             else :
                 print("Key not authenticated!")
-<<<<<<< HEAD
             tryAgain = input("Try again? (Y/N): ")
             if(tryAgain == 'N'):
                 return
             print("\n\n")
-        clear()
-=======
         elif response == 'D' :
             dbase.remove(keyName)
         elif response == 'E' :
             dbase.exitDB()
             complevimus = True
         print("\n\n")
->>>>>>> 77dc1be8676221a5490d35dc526c07ced14ad5f8
-        #loop back to top
+        clear()
 
 main()
