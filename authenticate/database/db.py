@@ -29,6 +29,8 @@ class database:
 
     def insert(self, key):
         name, freqVals, tVals = key.getValues()
+        maxT = maximum(tVals)
+        tVals = (1/maxT)*tVals
         # store name in name database---
 
         # ---|
