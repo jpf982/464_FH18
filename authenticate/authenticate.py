@@ -18,7 +18,7 @@ def L2norm(npoints, Tvals1, Tvals2):
     if(Tvals1.size != Tvals2.size):
         raise Exception("How did you get here? Check the size of your test and device spectra")
     nTvals = Tvals1.size
-    if(npoints == 0): # use all points in spectra! We should do this by default
+    if(npoints == 0 or npoints == 100): # use all points in spectra! We should do this by default
         dif = np.subtract(Tvals1,Tvals2)
         metric = (1/nTvals)*np.sqrt(np.sum(np.square(dif)))
     else: # approximate the norm
@@ -31,7 +31,7 @@ def L2norm(npoints, Tvals1, Tvals2):
 
 def termplot(x,y):
     fig = tpl.figure()
-    fig.plot(x, y, width=100, height=20)
+    fig.plot(x, y, width=150, height=13)
     fig.show()
 
 class Authenticator: 
@@ -68,7 +68,7 @@ class Authenticator:
         self.testTvals = []
         self.deviceDB = None
         self.lockID = 0
-        self.npoints = 0
+        self.npoints = 100
         self.maxfreq = 100000.0
         self.minfreq = 0.0
     
@@ -79,7 +79,7 @@ class Authenticator:
         #DeviceScore = col.namedtuple('DeviceID_score', 'DeviceScore') #Line from above. Does it belong here?
         DeviceScore = col.namedtuple('DeviceScore', ['DeviceID', 'score']) #Line from above. Does it belong here?
         deviceScores = []
-        print("Testing spectra with accuracy ", str(accuracy), " points. \n If npoints == 0, using full spectrum")
+        print("Testing spectra with accuracy ", str(accuracy), "% of samples")
         print("Number of devices to test = ", len(self.deviceDB))
         termplot(self.testFreqvals,self.testTvals)
         for key in keyList: # loop over the devices and test them
@@ -90,8 +90,8 @@ class Authenticator:
             deviceScore = DeviceScore(deepcopy(key.getID()),metric) # make a named tuple, sort of like C struct
             deviceScores.append(deviceScore)
         self.DevicesAndScores = sorted(deviceScores, key=lambda x: x.score) # sort based on metric
-        print("Authenticator is primed.")
-        print(str(self.DevicesAndScores))
+        #print("Authenticator is primed.")
+        #print(str(self.DevicesAndScores))
         return 
 
     # Finish the authentication
@@ -101,16 +101,14 @@ class Authenticator:
             BestDevice = self.DevicesAndScores[0].DeviceID
         except NameError: 
                 print("One must calculate the metrics first!")
-                self.getMetrics(0) #need to initialize the metrics first!
+                self.getMetrics(self.npoints) #need to initialize the metrics first!
                 BestDevice = self.DevicesAndScores[0].DeviceID
         else: 
             metric = self.DevicesAndScores[0].score
         
         print("Spectra of test sample and best match:")
 
-        print("Best match: ", BestDevice)
-        print("Norm of ", BestDevice, " and test spectrum = ", str(metric))
-        print("With cutoff = ", self.metricCutoff)
+        print("Best match = " + str(BestDevice) + "; m(Best, Test) = " + str(metric))
         #acceptedKeys = dbase.keyList()
         #acceptKey = (BestDevice in acceptedKeys)
         acceptKey = True    #Hardcoding because there is only one "lock", i.e. the RasPi
@@ -120,7 +118,7 @@ class Authenticator:
             return BestDevice
         else:
             if(metric >= self.metricCutoff): 
-                print("Photonic Quasicrystal rejected! Not Recognized.")
+                print("Photonic Quasicrystal rejected with cutoff = " + str(self.metricCutoff) + ". Not Recognized.")
             if(acceptKey != True):
                 print("Photonic Quasicrystal rejected! Key not authorized.")
             return False

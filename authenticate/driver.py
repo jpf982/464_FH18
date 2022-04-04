@@ -2,6 +2,10 @@ import PhQ as phq
 from database import db
 import authenticate as auth
 import os
+    
+
+
+clear = lambda: os.system('clear')
 
 #Drive the authentication process through this file
 def initialize() :
@@ -115,7 +119,7 @@ def main() :
 
     #Construct authenticator and database objects
     authenticator, dbase = initialize()
-
+    clear()
     while complevimus == False :
         print("==================================================================")
         print(" UT Austin Senior Design 2022 Photonic Quasicrystal Authenticator")
@@ -152,12 +156,16 @@ def main() :
                 #print("key name is : ", name)
                 #print("freqVals are : ", freqVals, "\n")
                 #print("tVals are : ", tVals)
-            authenticator.calculateMetrics(0, keys) # 0 is arbitrary, make param a variable
+            authenticator.calculateMetrics(100, keys) # 0 is arbitrary, make param a variable
             if authenticator.authenticate(dbase) != False : # returns boolean, utilize this
                 print("Key authenticated!")
             else :
                 print("Key not authenticated!")
+            tryAgain = input("Try again? (Y/N): ")
+            if(tryAgain == 'N'):
+                return
             print("\n\n")
+        clear()
         #loop back to top
 
 main()
