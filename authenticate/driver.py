@@ -60,7 +60,7 @@ def setVals(spectrum, authenticator, dbase) :
     authenticator : Authenticator Object
     dbase : Database Object
     """
-    metricCutoff = 0.1
+    metricCutoff = 0.002
     tVals = spectrum['tVals'].to_numpy()
     fVals = spectrum['fVals'].to_numpy()
     lockID = 1
@@ -78,9 +78,9 @@ def getPhQ(dbase) :
 
 def main() :
     """Main function of driver loop"""
-    toppath = "C:\\Users\\jimfo\\SeniorDesign\\FH18\\464_FH18\\authenticate\\faketransmissions\\"
+    #toppath = "C:\\Users\\jimfo\\SeniorDesign\\FH18\\464_FH18\\authenticate\\faketransmissions\\"
     #path = "/home/pi/464_FH18/authenticate/faketransmissions/transmission1.txt"
-    #toppath = "./faketransmissions/"
+    toppath = "../samples_spectra/"
     complevimus = False
 
     #Construct authenticator and database objects
@@ -96,7 +96,7 @@ def main() :
         print("List of keys in path:")
         print(os.popen("ls " + str(toppath)).read())
         keyName = input("Provide X, the keyID: ") #move inside response A if statement
-        path = toppath + keyName + ".txt"
+        path = toppath + keyName + ".csv"
         print("Getting spectrum...")
         spectrum = getSpectrum(dbase, path)
         print("Preprocessing key...")
@@ -138,6 +138,7 @@ def main() :
         elif response == 'E' :
             dbase.exitDB()
             complevimus = True
+        print("\n\n")
         #loop back to top
 
 main()

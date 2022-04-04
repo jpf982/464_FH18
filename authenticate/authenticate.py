@@ -5,6 +5,7 @@ import numpy as np
 import collections as col
 from copy import *
 from database import db
+import termplotlib as tpl
 
 # Compute the L^2 norm of two arrays, Tvals1 and Tvals2
 # = C * \int_{\inf}^{\inf} \sqrt{(f_1(x)-f_2(x))^2} dx 
@@ -27,6 +28,11 @@ def L2norm(npoints, Tvals1, Tvals2):
             intsum += (Tvals1[randIndex] - Tvals2[randIndex])^2
         metric = (1/npoints)*np.sqrt(intsum)
     return metric
+
+def termplot(x,y):
+    fig = tpl.figure()
+    fig.plot(x, y, width=100, height=20)
+    fig.show()
 
 class Authenticator: 
     
@@ -57,7 +63,7 @@ class Authenticator:
     #default constructor with no parameters
     def __init__(self):
         """Default constructor of Authenticator object"""
-        self.metricCutoff = 0.1
+        self.metricCutoff = 0.002
         self.testFreqvals = []
         self.testTvals = []
         self.deviceDB = None
@@ -75,10 +81,12 @@ class Authenticator:
         deviceScores = []
         print("Testing spectra with accuracy ", str(accuracy), " points. \n If npoints == 0, using full spectrum")
         print("Number of devices to test = ", len(self.deviceDB))
+        termplot(self.testFreqvals,self.testTvals)
         for key in keyList: # loop over the devices and test them
     #        if(key.getPoints() != self.npoints or key.getMaxF() != self.maxfreq or key.getMinF() != self.minfreq):
     #           raise Exception("The test spectrum and device spectra are not on identical frequency grids. Fix this!")
             metric = L2norm(accuracy,self.testTvals,key.getTvals()) # perform test
+            termplot(self.testFreqvals,key.getTvals())
             deviceScore = DeviceScore(deepcopy(key.getID()),metric) # make a named tuple, sort of like C struct
             deviceScores.append(deviceScore)
         self.DevicesAndScores = sorted(deviceScores, key=lambda x: x.score) # sort based on metric
@@ -97,6 +105,9 @@ class Authenticator:
                 BestDevice = self.DevicesAndScores[0].DeviceID
         else: 
             metric = self.DevicesAndScores[0].score
+        
+        print("Spectra of test sample and best match:")
+
         print("Best match: ", BestDevice)
         print("Norm of ", BestDevice, " and test spectrum = ", str(metric))
         print("With cutoff = ", self.metricCutoff)
@@ -105,7 +116,7 @@ class Authenticator:
         acceptKey = True    #Hardcoding because there is only one "lock", i.e. the RasPi
         #print(str(acceptKey))
         if(metric < self.metricCutoff and acceptKey):
-            print("Photonic Quasicrystal accepted!")
+            print("Photonic Quasicrystal accepted!\n\n")
             return BestDevice
         else:
             if(metric >= self.metricCutoff): 
