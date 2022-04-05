@@ -1,4 +1,3 @@
-from asyncio.windows_events import NULL
 import PhQ as phq
 from database import db
 import authenticate as auth
