@@ -141,11 +141,9 @@ def main() :
         elif response == 'D' :
             dbase.remove(keyName)
             print(keyName, " removed from database")
-        elif response == 'E' :
-            dbase.exitDB()
-            complevimus = True
         tryAgain = input("Try again? (Y/N): ")
         if(tryAgain == 'N'):
+            dbase.exitDB()
             return
         print("\n\n")
         clear()
