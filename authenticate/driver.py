@@ -80,9 +80,6 @@ def getPhQ(dbase) :
 
 def main() :
     """Main function of driver loop
-    
-    Driver Functions
-    ----------------
     """
     #toppath = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18\\authenticate\\faketransmissions\\"
     #path = "/home/pi/464_FH18/authenticate/faketransmissions/transmission1.txt"
@@ -106,11 +103,8 @@ def main() :
         print("Getting spectrum...")
         spectrum = getSpectrum(dbase, path)
         print("Preprocessing key...")
-        #try:
         if preprocessKey() :
             print("Key preprocessed.")
-        #catch :
-        #    print("Key values detected outside acceptable range.")
         if response == 'A' :
             print("Inserting key to database...")
             inserted = insertSpectrum(dbase, spectrum, keyName)
@@ -128,9 +122,6 @@ def main() :
                 for key in keys :
                     name, freqVals, tVals = key.getValues()
                 authenticator.calculateMetrics(100, keys) # 100 is arbitrary, make param a variable
-                #print("key name is : ", name)
-                #print("freqVals are : ", freqVals)
-                #print("tVals are : ", tVals)
                 if authenticator.authenticate(dbase) != False : # returns boolean, utilize this
                     print("Key authenticated!")
                 else :
