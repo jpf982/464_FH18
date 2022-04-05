@@ -120,7 +120,7 @@ def main() :
         elif response == 'B' :
             setVals(spectrum, authenticator, dbase)
             keys = getPhQ(dbase)
-            if(keys == NULL):
+            if(keys == None):
                 print("You're trying to pull from an empty database.\nAdd a key and try again.")  
             else :  
                 print("List of keys returned.")

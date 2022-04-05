@@ -69,7 +69,7 @@ class database:
         result = cursor.fetchall()
         print(len(result))
         if len(result) == 0 :
-            return NULL
+            return None
         else :    
             nameDF = pd.read_sql_query("SELECT * FROM db_spec", self.spec_conn)
             #specDF = pd.read_sql_query("SELECT * FROM db_spec", self.spec_conn)
