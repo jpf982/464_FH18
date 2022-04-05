@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 import PhQ as phq
 from database import db
 import authenticate as auth
@@ -82,9 +83,9 @@ def getPhQ(dbase) :
 
 def main() :
     """Main function of driver loop"""
-    #toppath = "C:\\Users\\jimfo\\SeniorDesign\\FH18\\464_FH18\\authenticate\\faketransmissions\\"
+    toppath = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18\\authenticate\\faketransmissions\\"
     #path = "/home/pi/464_FH18/authenticate/faketransmissions/transmission1.txt"
-    toppath = "../samples_spectra/"
+    #toppath = "../samples_spectra/"
     complevimus = False
 
     #Construct authenticator and database objects
@@ -100,7 +101,7 @@ def main() :
         print("List of keys in path:")
         print(os.popen("ls " + str(toppath)).read())
         keyName = input("Provide X, the keyID: ") #move inside response A if statement
-        path = toppath + keyName + ".csv"
+        path = toppath + keyName + ".txt"
         print("Getting spectrum...")
         spectrum = getSpectrum(dbase, path)
         print("Preprocessing key...")
@@ -119,21 +120,26 @@ def main() :
         elif response == 'B' :
             setVals(spectrum, authenticator, dbase)
             keys = getPhQ(dbase)
-            print("List of keys returned.")
-            for key in keys :
-                name, freqVals, tVals = key.getValues()
-            authenticator.calculateMetrics(100, keys) # 0 is arbitrary, make param a variable
-            #print("key name is : ", name)
-            #print("freqVals are : ", freqVals)
-            #print("tVals are : ", tVals)
-            if authenticator.authenticate(dbase) != False : # returns boolean, utilize this
-                print("Key authenticated!")
-            else :
-                print("Key not authenticated!")
+            if(keys == NULL):
+                print("You're trying to pull from an empty database.\nAdd a key and try again.")  
+            else :  
+                print("List of keys returned.")
+                for key in keys :
+                    name, freqVals, tVals = key.getValues()
+                authenticator.calculateMetrics(100, keys) # 100 is arbitrary, make param a variable
+                #print("key name is : ", name)
+                #print("freqVals are : ", freqVals)
+                #print("tVals are : ", tVals)
+                if authenticator.authenticate(dbase) != False : # returns boolean, utilize this
+                    print("Key authenticated!")
+                else :
+                    print("Key not authenticated!")
         elif response == 'C':
             dbase.clearTable()
+            print("Database cleared")
         elif response == 'D' :
             dbase.remove(keyName)
+            print(keyName, " removed from database")
         elif response == 'E' :
             dbase.exitDB()
             complevimus = True

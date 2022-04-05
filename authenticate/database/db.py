@@ -1,3 +1,4 @@
+from asyncio.windows_events import NULL
 import sqlite3
 import pandas as pd
 import numpy as np
@@ -8,10 +9,8 @@ class database:
     def __init__(self):
         """default constructor of database object"""
         self.spec_conn = sqlite3.connect(r'./database.db')
-        #self.name_conn = sqlite3.connect(r'./name.db')
 
     def readFile(self, path):
-        # df = pd.read_csv(path, sep='\t', engine='python')
         tVals = []
         fVals = []
         #try:
@@ -65,39 +64,40 @@ class database:
         return deviceList
 
     def keyList(self):
-        nameDF = pd.read_sql_query("SELECT * FROM db_spec", self.spec_conn)
-        #specDF = pd.read_sql_query("SELECT * FROM db_spec", self.spec_conn)
-        cursor = self.spec_conn.execute("SELECT * FROM db_spec")
-        nameList = []
-        specList = []
-        freqVals = []
-        tVals = []
-        PhQ_list = []
-
-        nameList = nameDF.Name.unique()
-        #print(nameList)
-        #for i in range(len(specDF['Name'])) :
-        #    nameList.append(specDF['Name'][i])
-
-        for row in cursor:
-            if row[0] != -1.0 :
-                tVals.append(row[1])
-                freqVals.append(row[0])
-            else :
-                specList.append(freqVals)
-                specList.append(tVals)
-                freqVals = []
-                tVals = []
-
-        for i in range(len(nameList)) :
-            key = phq.PhQ(nameList[i], np.asarray(specList[i*2]), np.asarray(specList[(i*2)+1]))
-            PhQ_list.append(key)
-
-        return PhQ_list
+        cursor = self.spec_conn.cursor()
+        cursor.execute("SELECT * FROM db_spec")
+        result = cursor.fetchall()
+        print(len(result))
+        if len(result) == 0 :
+            return NULL
+        else :    
+            nameDF = pd.read_sql_query("SELECT * FROM db_spec", self.spec_conn)
+            #specDF = pd.read_sql_query("SELECT * FROM db_spec", self.spec_conn)
+            cursor = self.spec_conn.execute("SELECT * FROM db_spec")
+            nameList = []
+            specList = []
+            freqVals = []
+            tVals = []
+            PhQ_list = []
+            nameList = nameDF.Name.unique()
+            for row in cursor:
+                if row[0] != -1.0 :
+                    tVals.append(row[1])
+                    freqVals.append(row[0])
+                else :
+                    specList.append(freqVals)
+                    specList.append(tVals)
+                    freqVals = []
+                    tVals = []
+            for i in range(len(nameList)) :
+                key = phq.PhQ(nameList[i], np.asarray(specList[i*2]), np.asarray(specList[(i*2)+1]))
+                PhQ_list.append(key)
+            return PhQ_list
 
     def clearTable(self):
         cursor = self.spec_conn.cursor()
         cursor.execute("DELETE FROM db_spec")
+        print("cleared", cursor.rowcount, " rows from the spectrum table.")
 
     def exitDB(self):
         self.spec_conn.close()
