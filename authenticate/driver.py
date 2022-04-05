@@ -83,9 +83,9 @@ def getPhQ(dbase) :
 
 def main() :
     """Main function of driver loop"""
-    toppath = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18\\authenticate\\faketransmissions\\"
+    #toppath = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18\\authenticate\\faketransmissions\\"
     #path = "/home/pi/464_FH18/authenticate/faketransmissions/transmission1.txt"
-    #toppath = "../samples_spectra/"
+    toppath = "../samples_spectra/"
     complevimus = False
 
     #Construct authenticator and database objects
@@ -101,7 +101,7 @@ def main() :
         print("List of keys in path:")
         print(os.popen("ls " + str(toppath)).read())
         keyName = input("Provide X, the keyID: ") #move inside response A if statement
-        path = toppath + keyName + ".txt"
+        path = toppath + keyName + ".csv"
         print("Getting spectrum...")
         spectrum = getSpectrum(dbase, path)
         print("Preprocessing key...")
