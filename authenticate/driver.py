@@ -2,8 +2,6 @@ import PhQ as phq
 from database import db
 import authenticate as auth
 import os
-    
-
 
 clear = lambda: os.system('clear')
 
@@ -81,7 +79,11 @@ def getPhQ(dbase) :
     return keyList
 
 def main() :
-    """Main function of driver loop"""
+    """Main function of driver loop
+    
+    Driver Functions
+    ----------------
+    """
     #toppath = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18\\authenticate\\faketransmissions\\"
     #path = "/home/pi/464_FH18/authenticate/faketransmissions/transmission1.txt"
     toppath = "../samples_spectra/"
@@ -95,7 +97,7 @@ def main() :
         print(" UT Austin Senior Design 2022 Photonic Quasicrystal Authenticator")
         print("==================================================================\n")
 
-        response = input("Authorize(\'A\') or Authenticate(\'B\'): ")
+        response = input("Choose a following function:\nAuthorize(\'A\')\nAuthenticate(\'B\')\nClear the Table (\'C\')\nDelete Key from Database(\'D\')\nFunction Choice: ")
         print("Consider spectrum path = " + toppath + "X.txt")
         print("List of keys in path:")
         print(os.popen("ls " + str(toppath)).read())
