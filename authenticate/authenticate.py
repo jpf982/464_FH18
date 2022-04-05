@@ -100,7 +100,7 @@ class Authenticator:
 
     # Finish the authentication
     # Return PhQ ID if successful, false if rejected
-    def authenticate(self, dbase):
+    def authenticate(self):
         try: 
             BestDevice = self.DevicesAndScores[0].DeviceID
         except NameError: 
