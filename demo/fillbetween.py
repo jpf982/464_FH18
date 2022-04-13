@@ -87,7 +87,7 @@ def main(argv):
     i = 0
     lw = 2
     Cx = 1; Cy = 1 # convert 
-    c1 = "mediumblue"; c2 = "forestgreen"; cfill = "cyan"
+    c1 = "mediumblue"; c2 = "forestgreen"; cfill = "magenta"; trans=0.15
     for file in argv:
         print("Reading file " + file + "...")
         if(i == 0):
@@ -120,9 +120,9 @@ def main(argv):
                     #y.append(float(row[1]))
             print("Length of s2:" + str(len(x)))
             plt.plot(x,y,c=c2,label="Chip #2",lw=lw)
-            ax1.fill_between(x,0,y, color="black")
-            ax1.fill_between(x,0,cy, color="black")
-            ax1.fill_between(x,y,cy, color=cfill)
+            #ax1.fill_between(x,0,y, color="black")
+            #ax1.fill_between(x,0,cy, color="black")
+            ax1.fill_between(x,y,cy, color=cfill, alpha=trans)
             #ax1.fill_between(x,y,cy,where=(cy > y), color="green")
         i += 1  
     # show all the plots
