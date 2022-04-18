@@ -1,5 +1,7 @@
 from tkinter import *
 import sqlite3 as sql3
+# Base code from Sourcecodester.com user razormist. 
+# Jan 4, 2021. https://www.sourcecodester.com/tutorials/python/11351/python-simple-login-application.html
 
 root = Tk()
 root.title("PhQ Verification System")
@@ -15,6 +17,7 @@ root.resizable(0, 0)
 #==============================VARIABLES======================================
 USERNAME = StringVar()
 PASSWORD = StringVar()
+USER = IntVar() 
  
 #==============================FRAMES=========================================
 Top = Frame(root, bd=2,  relief=RIDGE)
@@ -87,6 +90,27 @@ def HomeWindow():
     root.resizable(0, 0)
     Home.geometry("%dx%d+%d+%d" % (width, height, x, y))
     lbl_home = Label(Home, text="Successful Login as Admin!", font=('times new roman', 20)).pack()
+    lbl_subhead1 = Label(Home, text="Admin Functions:", font=('times new roman', 15)).pack(fill=X)
+    lbl_result = Label(Home, font=('times new roman', 15))
+    def drive():
+        if USER.get() == 1 :
+            selection = "Authorizing key..."
+        if USER.get() == 2 :
+            selection = "Authenticating key..."
+        if USER.get() == 3 :
+            selection = "Clearing Table..."
+        if USER.get() == 4 :
+            selection = "Deleting key..."
+        lbl_result.config(text = selection)
+        for x in range(100000000) :
+            a = x
+        selection = "Process " + str(USER.get()) + " completed."
+        lbl_result.config(text = selection)
+    rbttn1 = Radiobutton(Home, text="Authorize", variable=USER, value=1, command=drive).pack(padx=5, pady=5)
+    rbttn2 = Radiobutton(Home, text="Authenticate", variable=USER, value=2, command=drive).pack(padx=5, pady=5)
+    rbttn3 = Radiobutton(Home, text="Clear Table", variable=USER, value=3, command=drive).pack(padx=5, pady=5)
+    rbttn4 = Radiobutton(Home, text="Delete Key", variable=USER, value=4, command=drive).pack(padx=5, pady=5)
+    lbl_result.pack()
     btn_back = Button(Home, text='Back', command=Back).pack(pady=20, fill=X)
 
 def GuestWindow():
@@ -103,6 +127,13 @@ def GuestWindow():
     root.resizable(0, 0)
     Home.geometry("%dx%d+%d+%d" % (width, height, x, y))
     lbl_home = Label(Home, text="Successful Login as Guest!", font=('times new roman', 20)).pack()
+    lbl_subhead1 = Label(Home, text="Guest Functions:", font=('times new roman', 15)).pack(fill=X)
+    lbl_result = Label(Home, font=('times new roman', 15))
+    def drive():
+        selection = "Authenticating..."
+        lbl_result.config(text = selection)
+    rbttn1 = Radiobutton(Home, text="Authenticate", variable=USER, value=2, command=drive).pack(padx=5, pady=5)
+    lbl_result.pack()
     btn_back = Button(Home, text='Back', command=Back).pack(pady=20, fill=X)
  
 def Back():
