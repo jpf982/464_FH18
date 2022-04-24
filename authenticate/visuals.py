@@ -1,5 +1,11 @@
+from select import select
 from tkinter import *
+from tkinter import ttk
 import sqlite3 as sql3
+import PhQ as phq
+from database import db
+import authenticate as auth
+import os
 # Base code from Sourcecodester.com user razormist. 
 # Jan 4, 2021. https://www.sourcecodester.com/tutorials/python/11351/python-simple-login-application.html
 
@@ -17,6 +23,8 @@ root.resizable(0, 0)
 #==============================VARIABLES======================================
 USERNAME = StringVar()
 PASSWORD = StringVar()
+RESULT = StringVar()
+KEYNAME = StringVar()
 USER = IntVar() 
  
 #==============================FRAMES=========================================
@@ -92,26 +100,29 @@ def HomeWindow():
     lbl_home = Label(Home, text="Successful Login as Admin!", font=('times new roman', 20)).pack()
     lbl_subhead1 = Label(Home, text="Admin Functions:", font=('times new roman', 15)).pack(fill=X)
     lbl_result = Label(Home, font=('times new roman', 15))
-    def drive():
+    vlist = os.listdir("../samples_spectra/")
+    def select():
+        dbase = db.database()
+        path = "../samples_spectra/" + KEYNAME.get()
+        spectrum = dbase.readFile(path)
         if USER.get() == 1 :
-            selection = "Authorizing key..."
+            result = Authorize(dbase, spectrum)
         if USER.get() == 2 :
-            selection = "Authenticating key..."
+            result = Authenticate(dbase, spectrum)
         if USER.get() == 3 :
-            selection = "Clearing Table..."
+            result = ClearTable(dbase)
         if USER.get() == 4 :
-            selection = "Deleting key..."
-        lbl_result.config(text = selection)
-        for x in range(100000000) :
-            a = x
-        selection = "Process " + str(USER.get()) + " completed."
-        lbl_result.config(text = selection)
-    rbttn1 = Radiobutton(Home, text="Authorize", variable=USER, value=1, command=drive).pack(padx=5, pady=5)
-    rbttn2 = Radiobutton(Home, text="Authenticate", variable=USER, value=2, command=drive).pack(padx=5, pady=5)
-    rbttn3 = Radiobutton(Home, text="Clear Table", variable=USER, value=3, command=drive).pack(padx=5, pady=5)
-    rbttn4 = Radiobutton(Home, text="Delete Key", variable=USER, value=4, command=drive).pack(padx=5, pady=5)
-    lbl_result.pack()
-    btn_back = Button(Home, text='Back', command=Back).pack(pady=20, fill=X)
+            result = DeleteKey(dbase)
+        lbl_result.config(text=result)
+        dbase.exitDB()
+    rbttn1 = Radiobutton(Home, text="Authorize", variable=USER, value=1).pack(padx=5, pady=5)
+    rbttn2 = Radiobutton(Home, text="Authenticate", variable=USER, value=2).pack(padx=5, pady=5)
+    rbttn3 = Radiobutton(Home, text="Clear Table", variable=USER, value=3).pack(padx=5, pady=5)
+    rbttn4 = Radiobutton(Home, text="Delete Key", variable=USER, value=4).pack(padx=5, pady=5)
+    combo = ttk.Combobox(Home, values=vlist, textvariable=KEYNAME, state='readonly').pack(padx=5, pady=5)
+    btn_sbmt = Button(Home, text='Submit', command=select).pack(padx=5, pady=5)
+    lbl_result.pack(pady=5)
+    btn_back = Button(Home, text='Back', command=Back).pack(pady=20, fill=X, expand=True)
 
 def GuestWindow():
     global Home
@@ -129,16 +140,54 @@ def GuestWindow():
     lbl_home = Label(Home, text="Successful Login as Guest!", font=('times new roman', 20)).pack()
     lbl_subhead1 = Label(Home, text="Guest Functions:", font=('times new roman', 15)).pack(fill=X)
     lbl_result = Label(Home, font=('times new roman', 15))
-    def drive():
-        selection = "Authenticating..."
+    vlist = os.listdir("../samples_spectra/")
+    def select():
+        dbase = db.database()
+        path = "../samples_spectra/" + KEYNAME.get()
+        spectrum = dbase.readFile(path)
+        selection = Authenticate(dbase, spectrum)
         lbl_result.config(text = selection)
-    rbttn1 = Radiobutton(Home, text="Authenticate", variable=USER, value=2, command=drive).pack(padx=5, pady=5)
+    rbttn1 = Radiobutton(Home, text="Authenticate", variable=USER, value=2).pack(padx=5, pady=5)
+    combo = ttk.Combobox(Home, values=vlist, textvariable=KEYNAME, state='readonly').pack(padx=5, pady=5)
+    btn_sbmt = Button(Home, text='Submit', command=select).pack(padx=5, pady=5)
     lbl_result.pack()
     btn_back = Button(Home, text='Back', command=Back).pack(pady=20, fill=X)
  
 def Back():
     Home.destroy()
     root.deiconify()
+
+def Authorize(dbase, spectrum):
+    key = phq.PhQ(KEYNAME.get(), spectrum['fVals'], spectrum['tVals'])
+    inserted = dbase.insert(key)
+    if inserted:
+        return "Key Authorized"
+    else :
+        return "Key Failed to Authorize"
+
+def Authenticate(dbase, spectrum):
+    authenticator = auth.Authenticator()
+    metricCutoff = 0.002
+    tVals = spectrum['tVals'].to_numpy()
+    fVals = spectrum['fVals'].to_numpy()
+    lockID = 1
+    authenticator.setValues(metricCutoff, fVals, tVals, lockID, dbase)
+    keyList = dbase.keyList()
+    if keyList == None :
+        return "Database is empty"
+    authenticator.calculateMetrics(100, keyList)
+    if authenticator.authenticate() != False :
+        return "Access Granted"
+    else :
+        return "Access Denied"
+
+def ClearTable(dbase):
+    dbase.clearTable()
+    return "Table Cleared"
+
+def DeleteKey(dbase):
+    dbase.remove(KEYNAME.get())
+    return "Key Deleted"
 
 #==============================BUTTON WIDGETS=================================
 btn_login = Button(Form, text="Login", width=45, command=Login)

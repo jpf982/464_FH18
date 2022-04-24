@@ -96,6 +96,7 @@ class database:
     def clearTable(self):
         cursor = self.spec_conn.cursor()
         cursor.execute("DELETE FROM db_spec")
+        self.spec_conn.commit()
         print("cleared", cursor.rowcount, " rows from the spectrum table.")
 
     def exitDB(self):
