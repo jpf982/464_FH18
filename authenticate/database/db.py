@@ -53,6 +53,7 @@ class database:
     def remove(self, keyName):
         execution = "DELETE FROM db_spec WHERE Name = \"" + keyName + "\""
         self.spec_conn.execute(execution)
+        self.spec_conn.commit()
 
     def deviceList(self):
         """Return the list of devices
