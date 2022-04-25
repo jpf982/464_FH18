@@ -97,9 +97,9 @@ def HomeWindow():
     y = (screen_height/2) - (height/2)
     root.resizable(0, 0)
     Home.geometry("%dx%d+%d+%d" % (width, height, x, y))
-    lbl_home = Label(Home, text="Successful Login as Admin!", font=('times new roman', 20)).pack()
-    lbl_subhead1 = Label(Home, text="Admin Functions:", font=('times new roman', 15)).pack(fill=X)
-    lbl_result = Label(Home, font=('times new roman', 15))
+    lbl_home = Label(Home, text="Successful Login as Admin", font=('arial', 20)).pack()
+    lbl_subhead1 = Label(Home, text="Admin Functions:", font=('arial', 15)).pack(fill=X)
+    lbl_result = Label(Home, font=('arial', 32))
     vlist = os.listdir("../samples_spectra/")
     def select():
         dbase = db.database()
@@ -122,7 +122,7 @@ def HomeWindow():
     combo = ttk.Combobox(Home, values=vlist, textvariable=KEYNAME, state='readonly').pack(padx=5, pady=5)
     btn_sbmt = Button(Home, text='Submit', command=select).pack(padx=5, pady=5)
     lbl_result.pack(pady=5)
-    btn_back = Button(Home, text='Back', command=Back).pack(pady=20, fill=X, expand=True)
+    btn_back = Button(Home, text='Back', command=Back).pack(pady=5, padx=15, fill=X, expand=True)
 
 def GuestWindow():
     global Home
@@ -137,9 +137,9 @@ def GuestWindow():
     y = (screen_height/2) - (height/2)
     root.resizable(0, 0)
     Home.geometry("%dx%d+%d+%d" % (width, height, x, y))
-    lbl_home = Label(Home, text="Successful Login as Guest!", font=('times new roman', 20)).pack()
-    lbl_subhead1 = Label(Home, text="Guest Functions:", font=('times new roman', 15)).pack(fill=X)
-    lbl_result = Label(Home, font=('times new roman', 15))
+    lbl_home = Label(Home, text="Successful Login as Guest", font=('arial', 20)).pack()
+    lbl_subhead1 = Label(Home, text="Guest Functions:", font=('arial', 15)).pack(fill=X)
+    lbl_result = Label(Home, font=('arial', 32))
     vlist = os.listdir("../samples_spectra/")
     def select():
         dbase = db.database()
@@ -150,8 +150,8 @@ def GuestWindow():
     rbttn1 = Radiobutton(Home, text="Authenticate", variable=USER, value=2).pack(padx=5, pady=5)
     combo = ttk.Combobox(Home, values=vlist, textvariable=KEYNAME, state='readonly').pack(padx=5, pady=5)
     btn_sbmt = Button(Home, text='Submit', command=select).pack(padx=5, pady=5)
-    lbl_result.pack()
-    btn_back = Button(Home, text='Back', command=Back).pack(pady=20, fill=X)
+    lbl_result.pack(pady=15)
+    btn_back = Button(Home, text='Back', command=Back).pack(pady=15, padx=15, fill=X, expand=True)
  
 def Back():
     Home.destroy()
