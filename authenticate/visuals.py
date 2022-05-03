@@ -50,7 +50,7 @@ username = Entry(Form, textvariable=USERNAME, font=(14))
 username.grid(row=0, column=1)
 password = Entry(Form, textvariable=PASSWORD, show="*", font=(14))
 password.grid(row=1, column=1)
-vlist = os.listdir("C:\\Users\\jimfo\\SeniorDesign\\464_FH18\\samples_spectra\\")
+vlist = os.listdir("../samples_spectra/")
 vlist = [os.path.splitext(each)[0] for each in vlist]
 combo = ttk.Combobox(Form, values=vlist, textvariable=KEYNAME, font=(8), state='readonly').grid(row=2, column=1, padx=5, pady=5)
 
@@ -77,7 +77,7 @@ def Login(event=None):
         path = ""
         selection = -1
         try:
-            path = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18\\samples_spectra\\" + KEYNAME.get() + ".csv"
+            path = "../samples_spectra/" + KEYNAME.get() + ".csv"
             spectrum = dbase.readFile(path)
             selection = Authenticate(dbase, spectrum)
         except FileNotFoundError:
@@ -121,11 +121,11 @@ def HomeWindow():
     lbl_home = Label(Home, text="Successful Login as Admin", font=('arial', 20)).pack()
     lbl_subhead1 = Label(Home, text="Admin Functions:", font=('arial', 15)).pack(fill=X)
     lbl_result = Label(Home, font=('arial', 32))
-    vlist = os.listdir("C:\\Users\\jimfo\\SeniorDesign\\464_FH18\\samples_spectra\\")
+    vlist = os.listdir("../samples_spectra/")
     vlist = [os.path.splitext(each)[0] for each in vlist]
     def select():
         dbase = db.database()
-        path = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18\\samples_spectra\\" + KEYNAME.get() + ".csv"
+        path = "../samples_spectra/" + KEYNAME.get() + ".csv"
         spectrum = dbase.readFile(path)
         if USER.get() == 1 :
             result = Authorize(dbase, spectrum)
