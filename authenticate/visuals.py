@@ -74,9 +74,15 @@ def Login(event=None):
     else:
         cursor.execute("SELECT * FROM `member` WHERE `username` = ? AND `password` = ?", (USERNAME.get(), PASSWORD.get()))
         dbase = db.database()
-        path = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18\\samples_spectra\\" + KEYNAME.get() + ".csv"
-        spectrum = dbase.readFile(path)
-        selection = Authenticate(dbase, spectrum)
+        path = ""
+        selection = -1
+        try:
+            path = "C:\\Users\\jimfo\\SeniorDesign\\464_FH18\\samples_spectra\\" + KEYNAME.get() + ".csv"
+            spectrum = dbase.readFile(path)
+            selection = Authenticate(dbase, spectrum)
+        except FileNotFoundError:
+            selection = 2
+        
 
         if USERNAME.get() == 'admin' and PASSWORD.get() == 'adminadmin' and selection == 1:
             HomeWindow()
@@ -93,7 +99,7 @@ def Login(event=None):
             USERNAME.set("")
             PASSWORD.set("")
         else:
-            lbl_text.config(text="Invalid username, password, or key", fg="red")
+            lbl_text.config(text="Invalid or missing username, password, or key", fg="red")
             USERNAME.set("")
             PASSWORD.set("")   
     cursor.close()
@@ -131,7 +137,7 @@ def HomeWindow():
         dbase.exitDB()
     rbttn1 = Radiobutton(Home, text="Authorize", variable=USER, value=1).pack(padx=5, pady=5)
     #rbttn2 = Radiobutton(Home, text="Authenticate", variable=USER, value=2).pack(padx=5, pady=5)
-    rbttn3 = Radiobutton(Home, text="Clear Table", variable=USER, value=3).pack(padx=5, pady=5)
+    rbttn3 = Radiobutton(Home, text="Clear Database", variable=USER, value=3).pack(padx=5, pady=5)
     rbttn4 = Radiobutton(Home, text="Delete Key", variable=USER, value=4).pack(padx=5, pady=5)
     lbl_prompt = Label(Home, text='Select Key', font=('Arial', 15)).pack(padx=5, pady=5)
     combo = ttk.Combobox(Home, values=vlist, textvariable=KEYNAME, state='readonly').pack(padx=5, pady=5)
